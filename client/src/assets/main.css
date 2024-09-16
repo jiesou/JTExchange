@@ -1,0 +1,5 @@
+@import './base.css';
+
+.ant-layout-sider-zero-width-trigger {
+  color: #000000 !important;
+}

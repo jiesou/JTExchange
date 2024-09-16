@@ -1,0 +1,18 @@
+# Spacefile Docs: https://go.deta.dev/docs/spacefile/v0
+v: 0
+micros:
+  - name: server
+    src: .
+    path: ./api
+    engine: nodejs16
+    run: node src/index.js
+    dev: yarn dev
+    public: true
+    presets:
+     env:
+      - name: PASSWORD_SALT
+        description: "Password salt for hashing"
+        default: "salt"
+      - name: SYSTEM_KEY
+        description: "System key for controlling the pk0 address"
+        default: "key"
