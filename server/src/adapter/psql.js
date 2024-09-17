@@ -2,6 +2,7 @@
 import pg from 'pg';
 import { Sequelize, Op, DataTypes } from 'sequelize';
 import base from './base.js';
+import ca from './ca.js';
 
 class db extends base {
     constructor(tableName, schema = {}) {
@@ -10,14 +11,21 @@ class db extends base {
           dialect: 'postgres',
           dialectOptions: {
             ssl: {
-              require: false,
-              rejectUnauthorized: false
+              require: true,
+              rejectUnauthorized: false,
+              ca: ca
             }
           },
+          logging: false,
         });
         this.table = sequelize.define(tableName, schema, {
             tableName: tableName,
             timestamps: false,
+        });
+        sequelize.authenticate().then(() => {
+            console.debug('Connection has been established successfully.');
+        }).catch((err) => {
+            console.error('Unable to connect to the database:', err);
         });
         sequelize.sync().then(() => {
             console.debug(`Table ${tableName} synced.`);

@@ -5,7 +5,7 @@
   "type": "module",
   "main": "src/index.js",
   "scripts": {
-    "dev": "yarn exec nodemon src/index.js",
+    "dev": "npx nodemon src/index.js",
     "start": "node src/index.js"
   },
   "dependencies": {
@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "eslint": "^8.20.0",
-    "nodemon": "^2.0.19"
+    "nodemon": "^3.1.4",
+    "prisma": "^5.19.1"
   }
 }
