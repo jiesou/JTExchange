@@ -1,34 +1,17 @@
 /* eslint-disable no-unused-vars */
-import pg from 'pg';
-import { Sequelize, Op, DataTypes } from 'sequelize';
+import { PrismaClient } from '@prisma/client';
 import base from './base.js';
-import ca from './ca.js';
 
 class db extends base {
-    constructor(tableName, schema = {}) {
+    constructor(tableName) {
         super(tableName);
-        const sequelize = new Sequelize(process.env.POSTGRES_URL, {
-          dialect: 'postgres',
-          dialectOptions: {
-            ssl: {
-              require: true,
-              rejectUnauthorized: false,
-              ca: ca
-            }
-          },
-          logging: false,
-        });
-        this.table = sequelize.define(tableName, schema, {
-            tableName: tableName,
-            timestamps: false,
-        });
-        sequelize.authenticate().then(() => {
+        this.prisma = new PrismaClient();
+        this.table = this.prisma[tableName]; // 动态访问 Prisma 模型
+
+        this.prisma.$connect().then(() => {
             console.debug('Connection has been established successfully.');
         }).catch((err) => {
             console.error('Unable to connect to the database:', err);
-        });
-        sequelize.sync().then(() => {
-            console.debug(`Table ${tableName} synced.`);
         });
     }
 
@@ -38,20 +21,20 @@ class db extends base {
      */
     async fetch(where = {}, { desc, limit, offset } = {}) {
         try {
-            // Construct OR conditions using Sequelize's $or operator
             const orConditions = Object.keys(where).map((key) => ({
                 [key]: where[key],
             }));
+            console.log(orConditions);
 
             const options = {
-                where: { [Op.or]: orConditions },
-                limit,
-                offset,
+                where: { OR: orConditions },
+                take: limit,
+                skip: offset,
             };
 
-            if (desc) options.order = [[desc, 'DESC']];
+            if (desc) options.orderBy = { [desc]: 'desc' };
 
-            const result = await this.table.findAll(options);
+            const result = await this.table.findMany(options);
             return result;
         } catch (err) {
             console.error(err);
@@ -65,16 +48,15 @@ class db extends base {
      */
     async select(where = {}, { desc, limit, offset } = {}) {
         try {
-            // Construct AND conditions using Sequelize's default behavior
             const options = {
                 where,
-                limit,
-                offset,
+                take: limit,
+                skip: offset,
             };
 
-            if (desc) options.order = [[desc, 'DESC']];
+            if (desc) options.orderBy = { [desc]: 'desc' };
 
-            const result = await this.table.findAll(options);
+            const result = await this.table.findMany(options);
             return result;
         } catch (err) {
             console.error(err);
@@ -94,7 +76,7 @@ class db extends base {
 
     async add(data) {
         try {
-            const result = await this.table.create(data);
+            const result = await this.table.create({ data });
             return result;
         } catch (err) {
             console.error(err);
@@ -104,7 +86,10 @@ class db extends base {
 
     async update(data, where) {
         try {
-            const result = await this.table.update(data, { where });
+            const result = await this.table.updateMany({
+                where,
+                data,
+            });
             return result;
         } catch (err) {
             console.error(err);
@@ -114,7 +99,7 @@ class db extends base {
 
     async delete(where) {
         try {
-            const result = await this.table.destroy({ where });
+            const result = await this.table.deleteMany({ where });
             return result;
         } catch (err) {
             console.error(err);

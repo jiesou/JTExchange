@@ -32,16 +32,13 @@ router.post('/new', async (request, response) => {
         return
     }
 
-    const id = hashMD5(request.headers['x-pk'] + new Date().getTime()).substr(0, 8)
-
-    if (await dbUser.fetch({ pk: request.headers['x-pk'], id: request.headers['x-pk'] }, { limit: 1 }).length > 0) {
+    if (await dbUser.fetch({ pk: request.headers['x-pk'] }, { limit: 1 }).length > 0) {
         makeResponse(response, 400, 'User already exists.');
         return
     }
 
     // 构建新对象
     let user = {
-        id: id,
         nick: reqBody.nick,
         pk: request.headers['x-pk'],
         password: hash(request.headers['x-password']),

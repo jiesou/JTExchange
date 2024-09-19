@@ -16,8 +16,16 @@
       "destination": "/server/src"
     },
     {
+      "source": "/favicon.ico",
+      "destination": "/client/dist/favicon.ico"
+    },
+    {
+      "source": "/assets/(.*)",
+      "destination": "/client/dist/assets/$1"
+    },
+    {
       "source": "/(.*)",
-      "destination": "/client/dist/$1"
+      "destination": "/client/dist"
     }
   ]
 }
