@@ -1,3 +1,3 @@
-import psql from './psql.js';
+import db from './psql.js';
 
-export default psql;
+export default db;

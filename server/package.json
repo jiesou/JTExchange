@@ -1,27 +1,25 @@
 {
   "name": "jtexchange-server",
   "version": "0.0.0",
+  "license": "GPL-3.0-or-later",
   "private": true,
   "type": "module",
   "main": "src/index.js",
   "scripts": {
     "dev": "npx nodemon src/index.js",
-    "postinstall": "prisma generate",
     "start": "node src/index.js"
   },
   "dependencies": {
-    "@prisma/client": "^5.19.1",
+    "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
-    "pg": "^8.12.0",
-    "sequelize": "^6.37.3",
+    "pg": "^8.13.0",
     "vercel": "^37.4.2",
     "vue": "^3.4.29",
     "vue-router": "^4.3.3"
   },
   "devDependencies": {
     "eslint": "^8.20.0",
-    "nodemon": "^3.1.4",
-    "prisma": "^5.19.1"
+    "nodemon": "^3.1.4"
   }
 }

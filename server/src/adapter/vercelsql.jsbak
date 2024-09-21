@@ -1,0 +1,148 @@
+/* eslint-disable no-unused-vars */
+import { sql } from '@vercel/postgres';
+import base from './base.js';
+
+class db extends base {
+    constructor(tableName) {
+        super(tableName);
+        this.tableName = tableName;
+
+        sql`SELECT 1`
+            .then(() => {
+                console.debug('Connection has been established successfully.');
+            })
+            .catch((err) => {
+                console.error('Unable to connect to the database:', err);
+            });
+    }
+
+    /**
+     * Fetch: Where's individual queries are OR'ed.
+     * Multiple conditions are joined with OR logic.
+     */
+    async fetch(where = {}, { desc, limit, offset } = {}) {
+        try {
+            const orConditions = Object.keys(where)
+                .map((key, index) => `${key} = $${index + 1}`)
+                .join(' OR ');
+            const values = Object.values(where);
+
+            let query = `SELECT * FROM ${this.tableName}`;
+            if (orConditions.length > 0) {
+                query += ` WHERE ${orConditions}`;
+            }
+
+            if (desc) query += ` ORDER BY ${desc} DESC`;
+            if (limit) query += ` LIMIT ${limit}`;
+            if (offset) query += ` OFFSET ${offset}`;
+
+            const result = await sql.query(query, values);
+            return result.rows;
+        } catch (err) {
+            console.error(err);
+            return [];
+        }
+    }
+
+    /**
+     * Select: Where's individual queries are AND'ed.
+     * Multiple conditions are joined with AND logic.
+     */
+    async select(where = {}, { desc, limit, offset } = {}) {
+        try {
+            const andConditions = Object.keys(where)
+                .map((key, index) => `${key} = $${index + 1}`)
+                .join(' AND ');
+            const values = Object.values(where);
+
+            let query = `SELECT * FROM ${this.tableName}`;
+            if (andConditions.length > 0) {
+                query += ` WHERE ${andConditions}`;
+            }
+
+            if (desc) query += ` ORDER BY ${desc} DESC`;
+            if (limit) query += ` LIMIT ${limit}`;
+            if (offset) query += ` OFFSET ${offset}`;
+
+            const result = await sql.query(query, values);
+            return result.rows;
+        } catch (err) {
+            console.error(err);
+            return [];
+        }
+    }
+
+    async count(where = {}) {
+        try {
+            const andConditions = Object.keys(where)
+                .map((key, index) => `${key} = $${index + 1}`)
+                .join(' AND ');
+            const values = Object.values(where);
+
+            let query = `SELECT COUNT(*) FROM ${this.tableName}`;
+            if (andConditions.length > 0) {
+                query += ` WHERE ${andConditions}`;
+            }
+
+            const result = await sql.query(query, values);
+            return parseInt(result.rows[0].count, 10);
+        } catch (err) {
+            console.error(err);
+            return 0;
+        }
+    }
+
+    async add(data) {
+        try {
+            const columns = Object.keys(data).join(', ');
+            const placeholders = Object.keys(data)
+                .map((_, index) => `$${index + 1}`)
+                .join(', ');
+            const values = Object.values(data);
+
+            const query = `INSERT INTO ${this.tableName} (${columns}) VALUES (${placeholders}) RETURNING *`;
+            const result = await sql.query(query, values);
+            return result.rows[0];
+        } catch (err) {
+            console.error(err);
+            return;
+        }
+    }
+
+    async update(data, where) {
+        try {
+            const setConditions = Object.keys(data)
+                .map((key, index) => `${key} = $${index + 1}`)
+                .join(', ');
+            const whereConditions = Object.keys(where)
+                .map((key, index) => `${key} = $${Object.keys(data).length + index + 1}`)
+                .join(' AND ');
+            const values = [...Object.values(data), ...Object.values(where)];
+
+            const query = `UPDATE ${this.tableName} SET ${setConditions} WHERE ${whereConditions} RETURNING *`;
+            const result = await sql.query(query, values);
+            return result.rows;
+        } catch (err) {
+            console.error(err);
+            return;
+        }
+    }
+
+    async delete(where) {
+        try {
+            const whereConditions = Object.keys(where)
+                .map((key, index) => `${key} = $${index + 1}`)
+                .join(' AND ');
+            const values = Object.values(where);
+
+            const query = `DELETE FROM ${this.tableName} WHERE ${whereConditions} RETURNING *`;
+            const result = await sql.query(query, values);
+            return result.rows;
+        } catch (err) {
+            console.error(err);
+            return;
+        }
+    }
+}
+
+export default db;

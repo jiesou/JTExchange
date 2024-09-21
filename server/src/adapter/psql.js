@@ -1,63 +1,63 @@
 /* eslint-disable no-unused-vars */
-import { PrismaClient } from '@prisma/client';
+import pg from 'pg';
 import base from './base.js';
+
+const { Pool } = pg;
 
 class db extends base {
     constructor(tableName) {
         super(tableName);
-        this.prisma = new PrismaClient();
-        this.table = this.prisma[tableName]; // 动态访问 Prisma 模型
+        this.tableName = tableName;
 
-        this.prisma.$connect().then(() => {
-            console.debug('Connection has been established successfully.');
-        }).catch((err) => {
-            console.error('Unable to connect to the database:', err);
+        // 初始化 PostgreSQL 连接池
+        this.pool = new Pool({
+            connectionString: process.env.POSTGRES_URL,
+            ssl: {
+                rejectUnauthorized: false,
+            }
         });
+
+        this.pool.connect()
+            .then(() => {
+                console.debug('Connection has been established successfully.');
+            })
+            .catch((err) => {
+                console.error('Unable to connect to the database:', err);
+            });
     }
 
-    /**
-     * Fetch: Where's individual queries are OR'ed.
-     * Multiple conditions are joined with OR logic.
-     */
     async fetch(where = {}, { desc, limit, offset } = {}) {
         try {
-            const orConditions = Object.keys(where).map((key) => ({
-                [key]: where[key],
-            }));
-            console.log(orConditions);
+            const conditions = Object.keys(where).map((key, i) => `${key} = $${i + 1}`).join(' OR ');
+            const values = Object.values(where);
 
-            const options = {
-                where: { OR: orConditions },
-                take: limit,
-                skip: offset,
-            };
+            let query = `SELECT * FROM ${this.tableName}`;
+            if (conditions) query += ` WHERE ${conditions}`;
+            if (desc) query += ` ORDER BY ${desc} DESC`;
+            if (limit) query += ` LIMIT ${limit}`;
+            if (offset) query += ` OFFSET ${offset}`;
 
-            if (desc) options.orderBy = { [desc]: 'desc' };
-
-            const result = await this.table.findMany(options);
-            return result;
+            const result = await this.pool.query(query, values);
+            return result.rows;
         } catch (err) {
             console.error(err);
             return [];
         }
     }
 
-    /**
-     * Select: Where's individual queries are AND'ed.
-     * Multiple conditions are joined with AND logic.
-     */
     async select(where = {}, { desc, limit, offset } = {}) {
         try {
-            const options = {
-                where,
-                take: limit,
-                skip: offset,
-            };
+            const conditions = Object.keys(where).map((key, i) => `${key} = $${i + 1}`).join(' AND ');
+            const values = Object.values(where);
 
-            if (desc) options.orderBy = { [desc]: 'desc' };
+            let query = `SELECT * FROM ${this.tableName}`;
+            if (conditions) query += ` WHERE ${conditions}`;
+            if (desc) query += ` ORDER BY ${desc} DESC`;
+            if (limit) query += ` LIMIT ${limit}`;
+            if (offset) query += ` OFFSET ${offset}`;
 
-            const result = await this.table.findMany(options);
-            return result;
+            const result = await this.pool.query(query, values);
+            return result.rows;
         } catch (err) {
             console.error(err);
             return [];
@@ -66,8 +66,14 @@ class db extends base {
 
     async count(where = {}) {
         try {
-            const count = await this.table.count({ where });
-            return count;
+            const conditions = Object.keys(where).map((key, i) => `${key} = $${i + 1}`).join(' AND ');
+            const values = Object.values(where);
+
+            let query = `SELECT COUNT(*) FROM ${this.tableName}`;
+            if (conditions) query += ` WHERE ${conditions}`;
+
+            const result = await this.pool.query(query, values);
+            return parseInt(result.rows[0].count, 10);
         } catch (err) {
             console.error(err);
             return 0;
@@ -76,8 +82,13 @@ class db extends base {
 
     async add(data) {
         try {
-            const result = await this.table.create({ data });
-            return result;
+            const keys = Object.keys(data).join(', ');
+            const values = Object.values(data);
+            const placeholders = values.map((_, i) => `$${i + 1}`).join(', ');
+
+            const query = `INSERT INTO ${this.tableName} (${keys}) VALUES (${placeholders}) RETURNING *`;
+            const result = await this.pool.query(query, values);
+            return result.rows[0];
         } catch (err) {
             console.error(err);
             return;
@@ -86,11 +97,15 @@ class db extends base {
 
     async update(data, where) {
         try {
-            const result = await this.table.updateMany({
-                where,
-                data,
-            });
-            return result;
+            const setClause = Object.keys(data).map((key, i) => `${key} = $${i + 1}`).join(', ');
+            const values = Object.values(data);
+
+            const whereClause = Object.keys(where).map((key, i) => `${key} = $${i + values.length + 1}`).join(' AND ');
+            const whereValues = Object.values(where);
+
+            const query = `UPDATE ${this.tableName} SET ${setClause} WHERE ${whereClause}`;
+            const result = await this.pool.query(query, [...values, ...whereValues]);
+            return result.rowCount;
         } catch (err) {
             console.error(err);
             return;
@@ -99,8 +114,12 @@ class db extends base {
 
     async delete(where) {
         try {
-            const result = await this.table.deleteMany({ where });
-            return result;
+            const whereClause = Object.keys(where).map((key, i) => `${key} = $${i + 1}`).join(' AND ');
+            const values = Object.values(where);
+
+            const query = `DELETE FROM ${this.tableName} WHERE ${whereClause}`;
+            const result = await this.pool.query(query, values);
+            return result.rowCount;
         } catch (err) {
             console.error(err);
             return;
