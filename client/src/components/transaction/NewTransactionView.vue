@@ -1,6 +1,8 @@
 <script setup>
 import { ref } from 'vue';
 import { callApi } from '@/units/api';
+import { $t } from 'vue-i18n-plugin';
+import { message } from 'ant-design-vue';
 
 const transactionState = ref({
   amount: null,
@@ -10,6 +12,7 @@ const transactionState = ref({
 });
 
 const handleTransaction = transaction => {
+  transactionState.loading = true;
   callApi('transaction/new', {
     method: 'POST',
     body: {
@@ -18,7 +21,11 @@ const handleTransaction = transaction => {
       to: transaction
     }
   }).then((res) => {
-    console.log(res);
+    transactionState.loading = false;
+    message.success($t('dash.transferSuccess'));
+  }).catch((err) => {
+    transactionState.loading = false;
+    message.error(err.message);
   });
 };
 
