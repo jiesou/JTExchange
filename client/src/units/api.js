@@ -15,7 +15,7 @@ export async function callApi(path, options) {
     'X-Pk': pk,
     'X-Password': password
   }
-  return fetch(`https://api.jtex.jiecs.top/api/${path}`, overrideOptions)
+  return fetch(`https://jtex.jiecs.top/api/${path}`, overrideOptions)
     .then(response => response.json())
     .then(data => data)
 }

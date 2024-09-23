@@ -15,7 +15,7 @@ const loginState = ref({
 const handleLogin = (loginResult) => {
     console.log(loginResult);
     loginState.value.loading = true;
-    fetch('https://api.jtex.loliis.top/api/user', {
+    fetch('https://jtex.jiecs.top/api/user', {
         method: 'GET',
         headers: {
             'X-Pk': loginResult.pk,

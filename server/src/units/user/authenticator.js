@@ -9,6 +9,7 @@ async function authentication(request, response) {
         return;
     }
     let user = await dbUser.fetch({ pk: request.headers['x-pk'] }, { limit: 1 });
+    console.log(user);
     if (user.length > 0 && user[0]['password'] === hash(request.headers['x-password'])) {
         return user[0];
     } else {
