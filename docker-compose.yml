@@ -11,21 +11,27 @@ services:
     build:
       context: ./server
     environment:
-      - POSTGRES_URL="postgres://user:*w$3eJkyN2^ygY!*@db:5432"
+      - POSTGRES_URL="postgres://root:*w$3eJkyN2^ygY!*@db:5432"
     ports:
       - "3000:3000"
     volumes:
-      - ./server:/app
+      - ./server:/app:ro
     depends_on:
       - db
+        #condition: service_healthy
 
   db:
     image: postgres:13
     environment:
-      POSTGRES_USER: "user"
+      POSTGRES_USER: "root"
       POSTGRES_PASSWORD: "*w$3eJkyN2^ygY!*"
     ports:
       - "5432:5432"
     volumes:
       - ./data/psql:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 

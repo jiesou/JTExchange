@@ -10,6 +10,7 @@ class db extends base {
         this.tableName = tableName;
 
         // 初始化 PostgreSQL 连接池
+        console.debug('Connecting to PostgreSQL:', process.env.POSTGRES_URL);
         this.pool = new Pool({
             connectionString: process.env.POSTGRES_URL,
             ssl: {

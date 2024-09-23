@@ -1,5 +1,5 @@
 # Stage 1 - Build the dist folder
-FROM node:20-alpine as build-stage
+FROM node:20-alpine AS build-stage
 
 WORKDIR /app
 
@@ -15,9 +15,14 @@ RUN yarn build
 # Stage 2 - Nginx Server
 FROM nginx:alpine
 
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+WORKDIR /usr/share/nginx/html
+
+# Remove default nginx static assets
+RUN rm -rf ./*
+
 # Copy the built files from the previous stage
 COPY --from=build-stage /app/dist /usr/share/nginx/html
-
-COPY nginx.conf /etc/nginx/nginx.conf   
 
 EXPOSE 80
