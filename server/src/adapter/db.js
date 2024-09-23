@@ -1,3 +1,3 @@
-import db from './psql.js';
+import db from './sequelize.js';
 
 export default db;
