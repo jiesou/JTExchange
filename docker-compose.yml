@@ -1,4 +1,3 @@
-version: '3'
 services:
   client:
     build:
@@ -12,7 +11,7 @@ services:
     build:
       context: ./server
     environment:
-      - POSTGRES_URL="postgres://user:*w$3eJkyN2^ygY!*@db:5432/base"
+      - POSTGRES_URL="postgres://user:*w$3eJkyN2^ygY!*@db:5432"
     ports:
       - "3000:3000"
     volumes:
@@ -25,9 +24,8 @@ services:
     environment:
       POSTGRES_USER: "user"
       POSTGRES_PASSWORD: "*w$3eJkyN2^ygY!*"
-      POSTGRES_DB: "base"
+    ports:
+      - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./data/psql:/var/lib/postgresql/data
 
-volumes:
-  postgres_data:

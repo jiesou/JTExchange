@@ -2,7 +2,6 @@ import express from 'express';
 import makeResponse from './units/makeResponse.js';
 import db from './adapter/db.js';
 import { configDotenv } from 'dotenv';
-import cors from 'cors';
 import apiRouter from './api/index.js';
 
 configDotenv({
@@ -13,10 +12,6 @@ const dbTransaction = new db('Transactions');
 
 const app = express();
 
-app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002',
-    'https://*.vercel.app', 'https://jtex.jiexs.top' ]
-}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -27,7 +22,7 @@ app.use(function (request, response) {
 });
 
 
-let port = process.env.PORT || 3002;
+let port = process.env.PORT || 3000;
 app.listen(port, function () {
     console.debug('Server listening on port', port);
 });
