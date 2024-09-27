@@ -10,7 +10,7 @@ export default {
     welcome: {
         title: '首页',
         intro: '欢迎来到 JTEX',
-        introDesc: 'JTX，是有史以来第一个适用于教育领域的价值认证体系',
+        introDesc: '这是首个适用于教育领域的代币体系',
         education: '深耕教育',
         educationDesc: 'JTX 深谙教育场景之道，多年来，我们一直致力于解决教育行业的痛点，通过技术创新和模式探索，积累了丰富的经验与资源。我们理解教育的核心需求，并将这些洞察转化为实践，致力于推动教育行业价值认证体系的不断进化。',
         tooling: '技术驱动',

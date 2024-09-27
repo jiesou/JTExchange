@@ -1,7 +1,22 @@
 <script setup>
 import { ref, watch } from 'vue';
 import { useRouter, RouterView } from 'vue-router'
+import { MenuOutlined } from '@ant-design/icons-vue';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
+
 const selectedKeys = ref(['1']);
+const drawerOpen = ref(false);
+const items = ref([
+  {
+    key: '1',
+    label: t('welcome.title'),
+  },
+  {
+    key: '2',
+    label: t('dash.title'),
+  },
+]);
 
 const router = useRouter();
 watch(selectedKeys, (val) => {
@@ -13,6 +28,7 @@ watch(selectedKeys, (val) => {
       router.push({ name: 'dash' });
       break;
   }
+  drawerOpen.value = false;
 });
 </script>
 
@@ -33,31 +49,31 @@ watch(selectedKeys, (val) => {
     }
   }">
     <a-layout>
-      <a-layout-sider breakpoint="lg" collapsed-width="0">
+      <a-drawer placement="left" :open="drawerOpen" @close="drawerOpen = false" :closable=false >
         <a-space align="baseline">
           <img alt="JTX logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
         </a-space>
-        <a-menu v-model:selectedKeys="selectedKeys" mode="inline">
-          <a-menu-item key="1">
-            <user-outlined />
-            <span class="nav-text">{{ $t('welcome.title') }}</span>
-          </a-menu-item>
-          <a-menu-item key="2">
-            <user-outlined />
-            <span class="nav-text">{{ $t('dash.title') }}</span>
-          </a-menu-item>
-        </a-menu>
-      </a-layout-sider>
+        <a-menu v-model:selectedKeys="selectedKeys" mode="vertical" :items="items" />
+      </a-drawer>
       <a-layout>
-        <a-layout-header>
-          <h1>{{ $t('app.title') }}</h1>
-          <a-select v-model:value="$i18n.locale" :style="{ position: 'absolute', right: '10px', top: '10px' }">
+        <a-layout-header :style="{ paddingInline: '0' }">
+          <a-menu mode="horizontal" :selectable=false>
+            <a-menu-item key="1">
+              <a-button @click="drawerOpen = true">
+                <MenuOutlined />
+              </a-button>
+            </a-menu-item>
+            <a-menu-item key="2">
+              <router-link to="/"><h1>{{ t('app.title') }}</h1></router-link>
+            </a-menu-item>
+          </a-menu>
+          <a-select v-model:value="$i18n.locale" :style="{ position: 'absolute', right: '16px', top: '16px' }">
             <a-select-option value="en">en</a-select-option>
             <a-select-option value="zh">zh</a-select-option>
           </a-select>
         </a-layout-header>
         <a-layout-content>
-          <div :style="{ margin: '50px', padding: '24px', background: '#fff', minHeight: '360px' }">
+          <div :style="{ padding: '24px' }">
             <RouterView />
           </div>
         </a-layout-content>
@@ -66,7 +82,7 @@ watch(selectedKeys, (val) => {
   </a-config-provider>
 </template>
 
-<style  scoped>
+<style scoped>
 .logo {
   margin: 16px;
 }
@@ -77,7 +93,15 @@ h1 {
   font-weight: bold;
 }
 
-a-select {
-  align-self: center;
+router-link {
+  color: inherit;
+}
+
+
+a-layout-content > div {
+  margin: 10px;
+  padding: 24px;
+  background: #fff;
+  min-height: 360px;
 }
 </style>

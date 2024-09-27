@@ -18,4 +18,8 @@ export async function callApi(path, options) {
   return fetch(`https://jtex.jiecs.top/api/${path}`, overrideOptions)
     .then(response => response.json())
     .then(data => data)
+    .catch(error => {
+      console.error('Error:', error)
+      return Promise.reject(error)
+    })
 }

@@ -36,6 +36,7 @@ const handleLogin = (loginResult) => {
         })
         .catch(error => {
             message.error(error.message);
+            loginState.value.loading = false;
         });
 };
 

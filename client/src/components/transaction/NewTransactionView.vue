@@ -1,8 +1,10 @@
 <script setup>
 import { ref } from 'vue';
 import { callApi } from '@/units/api';
-import { $t } from 'vue-i18n-plugin';
+import { useI18n } from 'vue-i18n';
 import { message } from 'ant-design-vue';
+
+const { $t } = useI18n();
 
 const transactionState = ref({
   amount: null,
