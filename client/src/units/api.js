@@ -1,21 +1,24 @@
 import { getUser } from './storage.js'
 import { useRouter } from 'vue-router'
+import { router } from '@/main'
 
 export async function callApi(path, options) {
-  const { pk, password } = getUser()
-  if (!pk || !password) {
-    useRouter().push('/login')
-    return Promise.reject('No pk or password')
-  }
 
   const overrideOptions = options || {
     method: 'GET'
   }
-  overrideOptions.headers = overrideOptions.headers || {
-    'X-Pk': pk,
-    'X-Password': password
+  if (overrideOptions.headers.length === 0) {
+    const { pk, password } = getUser()
+    if (!pk || !password) {
+      router.push('/login')
+      return Promise.reject({ message: 'No user logged in' })
+    }
+    overrideOptions.headers = {
+      'X-Pk': pk,
+      'X-Password': password
+    }
   }
-  return fetch(`https://jtex.jiecs.top/api/${path}`, overrideOptions)
+  return fetch(import.meta.env.VITE_SERVER_BASEURL + path, overrideOptions)
     .then(response => response.json())
     .then(data => data)
     .catch(error => {

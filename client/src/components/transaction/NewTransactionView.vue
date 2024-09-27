@@ -4,7 +4,7 @@ import { callApi } from '@/units/api';
 import { useI18n } from 'vue-i18n';
 import { message } from 'ant-design-vue';
 
-const { $t } = useI18n();
+const { t } = useI18n();
 
 const transactionState = ref({
   amount: null,
@@ -36,16 +36,16 @@ const handleTransaction = transaction => {
 <template>
   <a-form class="new-transaction" :model="transactionState" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }"
     @finish="handleTransaction">
-    <a-form-item name="amount" :label="$t('amount')" required>
+    <a-form-item name="amount" :label="t('amount')" required>
       <a-input-number :placeholder="$t('amount')" :controls=false></a-input-number>
     </a-form-item>
-    <a-form-item name="to" :label="$t('dash.transferTo')" required>
-      <a-input-number :placeholder="$t('dash.transferTo')" :controls=false></a-input-number>
+    <a-form-item name="to" :label="t('dash.transferTo')" required>
+      <a-input-number :placeholder="t('dash.transferTo')" :controls=false></a-input-number>
     </a-form-item>
     <a-form-item name="comment" :label="$t('comment')">
-      <a-textarea :placeholder="$t('comment')" allow-clear></a-textarea>
+      <a-textarea :placeholder="t('comment')" allow-clear></a-textarea>
     </a-form-item>
-    <a-button type="primary" html-type="submit" :loading="transactionState.loading">{{ $t('transfer') }}</a-button>
+    <a-button type="primary" html-type="submit" :loading="transactionState.loading">{{ t('transfer') }}</a-button>
   </a-form>
 </template>
 

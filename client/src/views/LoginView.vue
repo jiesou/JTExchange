@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue';
-import { getUser } from '../units/storage.js';
+import { callApi } from '@/units/api.js';
+import { getUser } from '@/units/storage.js';
 import { message } from 'ant-design-vue';
 import { useRouter } from 'vue-router'
 
@@ -13,31 +14,26 @@ const loginState = ref({
 });
 
 const handleLogin = (loginResult) => {
-    console.log(loginResult);
     loginState.value.loading = true;
-    fetch('https://jtex.jiecs.top/api/user', {
+    callApi('user', {
         method: 'GET',
         headers: {
             'X-Pk': loginResult.pk,
             'X-Password': loginResult.password
         }
-    })
-        .then(res => res.json())
-        .then(res => {
-            console.log(res);
-            if (Number(res.data.pk) == loginResult.pk) {
-                message.success(res.message);
-                localStorage.setItem('pk', loginResult.pk);
-                localStorage.setItem('password', loginResult.password);
-                router.push('/dash');
-            } else {
-                message.error(res.message);
-            }
-        })
-        .catch(error => {
-            message.error(error.message);
-            loginState.value.loading = false;
-        });
+    }).then(res => {
+        if (Number(res.data.pk) == loginResult.pk) {
+            message.success(res.message);
+            localStorage.setItem('pk', loginResult.pk);
+            localStorage.setItem('password', loginResult.password);
+            router.push('/dash');
+        } else {
+            message.error(res.message);
+        }
+    }).catch(error => {
+        message.error(error.message);
+        loginState.value.loading = false;
+    });
 };
 
 const { pk: storagePk, password: storagePassword } = getUser();

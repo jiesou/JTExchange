@@ -64,7 +64,7 @@ watch(selectedKeys, (val) => {
               </a-button>
             </a-menu-item>
             <a-menu-item key="2">
-              <router-link to="/"><h1>{{ t('app.title') }}</h1></router-link>
+              <router-link to="/" @click="selectedKeys = ['1']"><h1>{{ t('app.title') }}</h1></router-link>
             </a-menu-item>
           </a-menu>
           <a-select v-model:value="$i18n.locale" :style="{ position: 'absolute', right: '16px', top: '16px' }">
@@ -73,7 +73,7 @@ watch(selectedKeys, (val) => {
           </a-select>
         </a-layout-header>
         <a-layout-content>
-          <div :style="{ padding: '24px' }">
+          <div :style="{ padding: '24px', minHeight: '360px', background: '#fff' }">
             <RouterView />
           </div>
         </a-layout-content>

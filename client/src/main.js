@@ -12,3 +12,5 @@ app.use(i18n)
 app.use(Antd)
 
 app.mount('#app')
+
+export { router, i18n }
