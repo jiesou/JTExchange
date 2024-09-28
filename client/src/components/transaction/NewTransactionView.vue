@@ -36,7 +36,7 @@ const handleTransaction = transaction => {
       <a-input-number v-model:value="transactionState.amount" :placeholder="t('amount')" :controls=false></a-input-number>
     </a-form-item>
     <a-form-item name="to" :label="t('dash.transferTo')" required>
-      <a-input-number v-model:value="transactionState.to" :placeholder="t('dash.transferTo')" :controls=false></a-input-number>
+      <a-input v-model:value="transactionState.to" :placeholder="t('dash.transferTo')"></a-input>
     </a-form-item>
     <a-form-item name="comment" :label="t('comment')">
       <a-textarea v-model:value="transactionState.comment" :placeholder="t('comment')" allow-clear></a-textarea>
