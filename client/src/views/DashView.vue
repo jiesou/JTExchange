@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import { callApi } from '@/units/api';
+import { getUser } from '@/units/storage';
 
 import NewTransactionView from '../components/transaction/NewTransactionView.vue';
 
@@ -16,12 +17,17 @@ const fetchBalance = () => {
   });
 };
 fetchBalance();
+
+const username = ref(getUser().pk);
+
+
 </script>
 
 <template>
   <div class="dash">
-    <a-space size="middle">
-      <h1>{{ $t('dash.balance', { amount: balance }) }}</h1>
+    <a-typography-title>{{ $t('dash.welcome', { name: username }) }}</a-typography-title>
+    <a-space size="middle" align="baseline">
+      <a-typography-title :level="3">{{ $t('dash.balance', { amount: balance }) }}</a-typography-title>
 
       <a-button @click="fetchBalance" :loading="loading"> 
         {{ $t('refresh') }}
@@ -29,7 +35,7 @@ fetchBalance();
     </a-space>
   </div>
   <div>
-    <NewTransactionView />
+    <NewTransactionView @finish="fetchBalance" />
   </div>
 </template>
 

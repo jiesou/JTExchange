@@ -30,6 +30,7 @@ export default {
     },
     dash: {
         title: '面板',
+        welcome: '欢迎，{name}',
         logout: '登出',
         balance: '余额：{amount}',
         transferTo: '转账给',
