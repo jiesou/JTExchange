@@ -15,7 +15,8 @@ export async function callApi(path, options) {
     }
     overrideOptions.headers = {
       'X-Pk': pk,
-      'X-Password': password
+      'X-Password': password,
+      'Content-Type': 'application/json'
     }
   }
   return fetch(import.meta.env.VITE_SERVER_BASEURL + path, overrideOptions)
