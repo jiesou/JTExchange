@@ -2,6 +2,7 @@
 import { ref, watch } from 'vue';
 import { useRouter, RouterView } from 'vue-router'
 import { MenuOutlined } from '@ant-design/icons-vue';
+import zh_CN from 'ant-design-vue/es/locale/zh_CN';
 import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
 
@@ -44,10 +45,9 @@ watch(selectedKeys, (val) => {
       Menu: {
         colorItemBg: '#fff',
         colorSubItemBg: '#fff'
-      },
-
+      }
     }
-  }">
+    }" :locale="zh_CN">
     <a-layout>
       <a-drawer placement="left" :open="drawerOpen" @close="drawerOpen = false" :closable=false >
         <a-space align="baseline">
@@ -57,16 +57,12 @@ watch(selectedKeys, (val) => {
       </a-drawer>
       <a-layout>
         <a-layout-header :style="{ paddingInline: '0' }">
-          <a-menu mode="horizontal" :selectable=false>
-            <a-menu-item key="1">
-              <a-button @click="drawerOpen = true">
-                <MenuOutlined />
-              </a-button>
-            </a-menu-item>
-            <a-menu-item key="2">
-              <router-link to="/" @click="selectedKeys = ['1']"><h1>{{ t('app.title') }}</h1></router-link>
-            </a-menu-item>
-          </a-menu>
+          <a-space :style="{ margin: '0 16px' }" size="large">
+            <a-button @click="drawerOpen = true">
+              <MenuOutlined />
+            </a-button>
+            <router-link to="/" @click="selectedKeys = ['1']"><h1>{{ t('app.title') }}</h1></router-link>
+          </a-space>
           <a-select v-model:value="$i18n.locale" :style="{ position: 'absolute', right: '16px', top: '16px' }">
             <a-select-option value="en">en</a-select-option>
             <a-select-option value="zh">zh</a-select-option>

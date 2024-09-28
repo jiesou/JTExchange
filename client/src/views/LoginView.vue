@@ -22,13 +22,14 @@ const handleLogin = (loginResult) => {
             'X-Password': loginResult.password
         }
     }).then(res => {
+        // Check if the response pk is the same as the login pk
         if (Number(res.data.pk) == loginResult.pk) {
             message.success(res.message);
             localStorage.setItem('pk', loginResult.pk);
             localStorage.setItem('password', loginResult.password);
             router.push('/dash');
         } else {
-            message.error(res.message);
+            throw new Error("Login failed");
         }
     }).catch(error => {
         message.error(error.message);

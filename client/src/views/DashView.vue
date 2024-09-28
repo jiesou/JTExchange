@@ -20,12 +20,13 @@ fetchBalance();
 
 <template>
   <div class="dash">
-    <h1>{{ $t('dash.balance', { amount: balance }) }}</h1>
+    <a-space size="middle">
+      <h1>{{ $t('dash.balance', { amount: balance }) }}</h1>
 
-    <a-button @click="fetchBalance" :loading="loading"> 
-      {{ $t('refresh') }}
-    </a-button>
-
+      <a-button @click="fetchBalance" :loading="loading"> 
+        {{ $t('refresh') }}
+      </a-button>
+    </a-space>
   </div>
   <div>
     <NewTransactionView />
