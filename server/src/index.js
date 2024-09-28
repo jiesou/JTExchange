@@ -1,8 +1,9 @@
 import express from 'express';
+import cors from 'cors';
+import { configDotenv } from 'dotenv';
 import makeResponse from './units/makeResponse.js';
 import db from './adapter/db.js';
 import { DataTypes } from 'sequelize';
-import { configDotenv } from 'dotenv';
 import apiRouter from './api/index.js';
 
 configDotenv({
@@ -23,6 +24,7 @@ const dbTransaction = new db('Transactions', {
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

@@ -6,7 +6,7 @@ import reqParameterParser from "../../units/reqParamsParser.js";
 const router = Router();
 
 router.post('/new_system_transaction', async (request, response) => {
-    if (request.headers.key !== process.env.SYSTEM_KEY) {
+    if (request.headers['x-key'] !== process.env.SYSTEM_KEY) {
         makeResponse(response, 403, 'Permission denied.');
         return;
     }
@@ -16,7 +16,7 @@ router.post('/new_system_transaction', async (request, response) => {
     const reqBody = reqParameterParser(request);
 
     // 检查目标用户是否存在
-    const targetUser = await dbUser.fetch({ pk: reqBody.to_pk || 0 }, { limit: 1 });
+    const targetUser = await dbUser.fetch({ pk: reqBody.to || "0" }, { limit: 1 });
     if (targetUser.length === 0) {
         makeResponse(response, 400, 'Target user is not exist.');
         return;
@@ -37,7 +37,7 @@ router.post('/new_system_transaction', async (request, response) => {
     // 构建新交易
     const transaction = {
         from_pk: 0,
-        to_pk: reqBody.to_pk,
+        to_pk: reqBody.to,
         time: transactionTime,
         amount: transactionAmount,
         comment: reqBody.comment,

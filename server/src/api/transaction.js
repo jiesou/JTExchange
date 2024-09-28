@@ -34,7 +34,7 @@ router.post('/new', async (request, response) => {
     const reqBody = reqParameterParser(request);
 
     // 检查目标用户是否存在
-    const targetUser = await dbUser.fetch({ pk: reqBody.to_pk || 0 }, { limit: 1 });
+    const targetUser = await dbUser.fetch({ pk: reqBody.to || "0" }, { limit: 1 });
     if (targetUser.length === 0) {
         makeResponse(response, 400, 'Target user is not exist.');
         return;

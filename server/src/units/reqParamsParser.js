@@ -14,7 +14,7 @@
 //     }
 // }
 
-function reqParamsParser (request) {
+function reqParamsParser(request) {
     let arr
     arr = request.body || request.query;
     return arr

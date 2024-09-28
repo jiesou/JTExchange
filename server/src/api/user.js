@@ -10,7 +10,9 @@ const router = Router();
 router.get('/', async (request, response) => {
     // 在数据库中查找用户
     let user = await authentication(request, response);
-    if (!user) return;
+    if (!user) {
+      return;
+    }
     user['password'] = undefined;
     user['key'] = undefined;
     makeResponse(response, 0, 'Success.', user);
