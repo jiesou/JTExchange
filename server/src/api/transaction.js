@@ -62,7 +62,7 @@ router.post('/new', async (request, response) => {
     // 构建新交易
     const transaction = {
         from_pk: user.pk,
-        to_pk: reqBody.to_pk,
+        to_pk: reqBody.to,
         time: transactionTime,
         amount: transactionAmount,
         comment: reqBody.comment,
