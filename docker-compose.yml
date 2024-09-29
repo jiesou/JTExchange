@@ -11,17 +11,16 @@ services:
     build:
       context: ./server
     environment:
-      - POSTGRES_URL="postgres://postgres:w3eJkyN2ygY@db:5432/base"
+      POSTGRES_URL: "postgres://postgres:w3eJkyN2ygY@db:5432/base"
     expose:
       - 3000
     volumes:
       - ./server:/app
     depends_on:
-      db:
-        condition: service_healthy
+      - db
 
   db:
-    image: postgres:13
+    image: postgres
     environment:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "w3eJkyN2ygY"
@@ -30,9 +29,4 @@ services:
       - "5432:5432"
     volumes:
       - ./data/psql:/var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD", "pg_isready" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 

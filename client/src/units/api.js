@@ -1,5 +1,4 @@
 import { getUser } from './storage.js'
-import { useRouter } from 'vue-router'
 import { router } from '@/main'
 
 export async function callApi(path, options) {

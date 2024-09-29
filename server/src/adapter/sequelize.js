@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-vars */
-import { Sequelize, Op, DataTypes } from 'sequelize';
+import { Sequelize, Op } from 'sequelize';
 import base from './base.js';
 
 class db extends base {
     constructor(tableName, schema = {}) {
         super(tableName);
         console.debug(`${process.env.POSTGRES_URL}`);
-        const sequelize = new Sequelize('postgres://postgres:w3eJkyN2ygY@127.0.0.1:5432/base');
+        const sequelize = new Sequelize(process.env.POSTGRES_URL);
         this.table = sequelize.define(tableName, schema, {
             tableName: tableName,
             timestamps: false,
