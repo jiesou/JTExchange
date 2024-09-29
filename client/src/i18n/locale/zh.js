@@ -25,7 +25,7 @@ export default {
     login: {
         title: '登录',
         logging: '登录中...',
-        pk: 'pk',
+        pk: '用户名',
         password: '密码',
     },
     dash: {

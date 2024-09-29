@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineEmits } from 'vue';
+import { ref } from 'vue';
 import { callApi } from '@/units/api';
 import { useI18n } from 'vue-i18n';
 import { message } from 'ant-design-vue';
@@ -16,16 +16,16 @@ const transactionState = ref({
 const emit = defineEmits(['finish']);
 
 const handleTransaction = transaction => {
-  transactionState.loading = true;
+  transactionState.value.loading = true;
   callApi('transaction/new', {
     method: 'POST',
     body: JSON.stringify(transaction)
-  }).then((res) => {
-    transactionState.loading = false;
+  }).then(() => {
+    transactionState.value.loading = false;
     message.success(t('dash.transferSuccess'));
     emit('finish');
   }).catch((err) => {
-    transactionState.loading = false;
+    transactionState.value.loading = false;
     message.error(err.message);
   });
 };

@@ -5,6 +5,8 @@ import { getUser } from '@/units/storage.js';
 import { message } from 'ant-design-vue';
 import { useRouter } from 'vue-router'
 
+import FaceScan from '@/components/FaceScan.vue';
+
 const router = useRouter();
 
 const loginState = ref({
@@ -60,6 +62,7 @@ if (storagePk && storagePassword) {
             <a-button type="primary" html-type="submit" :loading="loginState.loading">{{ $t('login.title') }}</a-button>
         </a-form>
     </div>
+    <FaceScan />
 </template>
 
 <style scoped>

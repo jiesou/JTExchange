@@ -12,6 +12,7 @@
   "dependencies": {
     "@ant-design/icons-vue": "^7.0.1",
     "ant-design-vue": "^4.2.3",
+    "face-api.js": "^0.22.2",
     "vue": "^3.4.29",
     "vue-i18n": "^9.14.1",
     "vue-router": "^4.3.3"
