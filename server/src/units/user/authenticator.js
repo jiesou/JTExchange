@@ -7,7 +7,13 @@ async function authentication(request, response) {
         makeResponse(response, 400, 'Missing pk.');
         return;
     }
-    let users = await dbUser.fetch({ pk: request.headers['x-pk'] }, { limit: 1 });
+    let users;
+    if (request.headers['x-carddata']) {
+        // 通过 NFC 卡号登录可以不用账号密码
+        users = await dbUser.fetch({ cardData: request.headers['x-carddata'] }, { limit: 1 });
+    } else {
+        users = await dbUser.fetch({ pk: request.headers['x-pk'] }, { limit: 1 });
+    }
     if (users.length === 0) {
         makeResponse(response, 403, 'User not found.');
         return;

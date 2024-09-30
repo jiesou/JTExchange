@@ -11,16 +11,12 @@ import { ref, onMounted, onBeforeUnmount } from 'vue';
 const inputValue = ref('');
 const emit = defineEmits(['input-entered']);
 
-const emitInput = () => {
-    emit('input-entered', inputValue.value);
-    inputValue.value = ''; // 清空输入框
-};
-
 const handleKeydown = (event) => {
     // 假设卡片数据以回车键结束
     if (event.key === 'Enter') {
         console.log('Card data entered:', inputValue.value);
-        emitInput();
+        emit('input-entered', inputValue.value);
+        inputValue.value = ''; // 清空输入框
     } else {
         if (event.key.length === 1) inputValue.value += event.key;
     }

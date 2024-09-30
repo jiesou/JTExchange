@@ -21,7 +21,7 @@ const fetchBalance = () => {
 };
 fetchBalance();
 
-const username = ref(getUser().pk);
+const username = ref(getUser().nick);
 
 const logout = () => {
   setUser();

@@ -31,14 +31,9 @@ const handleLogin = (loginResult) => {
             'X-Carddata': loginResult.cardData ? loginResult.cardData : null
         }
     }).then(res => {
-        // Check if the response pk is the same as the login pk
-        if (Number(res.data.pk) == loginResult.pk) {
-            message.success(res.message);
-            setUser(loginResult.pk, loginResult.password, loginResult.cardData);
-            router.push('/dash');
-        } else {
-            throw new Error("Login failed");
-        }
+        message.success(res.message);
+        setUser(res.data.pk, res.data.nick, loginResult.password, loginResult.cardData,);
+        router.push('/dash');
     }).catch(error => {
         message.error(error.message);
         loginState.value.loading = false;
