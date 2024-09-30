@@ -5,15 +5,20 @@ import { getUser } from '@/units/storage.js';
 import { message } from 'ant-design-vue';
 import { useRouter } from 'vue-router'
 
-import FaceScan from '@/components/FaceScan.vue';
+import CardReader from '@/components/CardReader.vue';
 
 const router = useRouter();
 
 const loginState = ref({
     pk: null,
     password: null,
-    loading: false,
+    cardData: null,
+    loading: false
 });
+
+const handleCardInput = (cardData) => {
+    loginState.value.cardData = cardData;
+};
 
 const handleLogin = (loginResult) => {
     loginState.value.loading = true;
@@ -21,7 +26,8 @@ const handleLogin = (loginResult) => {
         method: 'GET',
         headers: {
             'X-Pk': loginResult.pk,
-            'X-Password': loginResult.password
+            'X-Password': loginResult.password ? loginResult.password : null,
+            'X-CardData': loginResult.cardData ? loginResult.cardData : null
         }
     }).then(res => {
         // Check if the response pk is the same as the login pk
@@ -29,6 +35,10 @@ const handleLogin = (loginResult) => {
             message.success(res.message);
             localStorage.setItem('pk', loginResult.pk);
             localStorage.setItem('password', loginResult.password);
+            localStorage.setItem('token', res.data.token);2489486361
+            2045892010
+            2045892010
+            
             router.push('/dash');
         } else {
             throw new Error("Login failed");
@@ -62,7 +72,7 @@ if (storagePk && storagePassword) {
             <a-button type="primary" html-type="submit" :loading="loginState.loading">{{ $t('login.title') }}</a-button>
         </a-form>
     </div>
-    <FaceScan />
+    <CardReader @input-entered="handleCardInput" />
 </template>
 
 <style scoped>
