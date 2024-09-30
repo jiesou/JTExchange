@@ -6,7 +6,10 @@ class db extends base {
     constructor(tableName, schema = {}) {
         super(tableName);
         console.debug(`${process.env.POSTGRES_URL}`);
-        const sequelize = new Sequelize(process.env.POSTGRES_URL);
+        const sequelize = new Sequelize(process.env.POSTGRES_URL, {
+            dialect: 'postgres',
+            logging: false,
+        });
         this.table = sequelize.define(tableName, schema, {
             tableName: tableName,
             timestamps: false,
