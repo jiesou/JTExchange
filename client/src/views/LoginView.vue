@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import { callApi } from '@/units/api.js';
-import { getUser } from '@/units/storage.js';
+import { getUser, setUser } from '@/units/storage.js';
 import { message } from 'ant-design-vue';
 import { useRouter } from 'vue-router'
 
@@ -18,6 +18,7 @@ const loginState = ref({
 
 const handleCardInput = (cardData) => {
     loginState.value.cardData = cardData;
+    handleLogin(loginState.value);
 };
 
 const handleLogin = (loginResult) => {
@@ -27,18 +28,13 @@ const handleLogin = (loginResult) => {
         headers: {
             'X-Pk': loginResult.pk,
             'X-Password': loginResult.password ? loginResult.password : null,
-            'X-CardData': loginResult.cardData ? loginResult.cardData : null
+            'X-Carddata': loginResult.cardData ? loginResult.cardData : null
         }
     }).then(res => {
         // Check if the response pk is the same as the login pk
         if (Number(res.data.pk) == loginResult.pk) {
             message.success(res.message);
-            localStorage.setItem('pk', loginResult.pk);
-            localStorage.setItem('password', loginResult.password);
-            localStorage.setItem('token', res.data.token);2489486361
-            2045892010
-            2045892010
-            
+            setUser(loginResult.pk, loginResult.password, loginResult.cardData);
             router.push('/dash');
         } else {
             throw new Error("Login failed");
@@ -49,11 +45,12 @@ const handleLogin = (loginResult) => {
     });
 };
 
-const { pk: storagePk, password: storagePassword } = getUser();
+const user = getUser();
 
-if (storagePk && storagePassword) {
-    loginState.value.pk = storagePk;
-    loginState.value.password = storagePassword;
+if (user) {
+    loginState.value.pk = user.pk;
+    loginState.value.password = user.password;
+    loginState.value.cardData = user.cardData;
     handleLogin( loginState.value );
 }
 </script>

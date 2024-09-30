@@ -7,14 +7,15 @@ export async function callApi(path, options) {
     method: 'GET'
   }
   if (!overrideOptions.headers) {
-    const { pk, password } = getUser()
-    if (!pk || !password) {
+    const user = getUser()
+    if (!user) {
       router.push('/login')
       return Promise.reject({ message: 'No user logged in' })
     }
     overrideOptions.headers = {
-      'X-Pk': pk,
-      'X-Password': password,
+      'X-Pk': user.pk,
+      'X-Password': user.password,
+      'X-CardData': user.cardData,
       'Content-Type': 'application/json'
     }
   }

@@ -13,8 +13,9 @@ router.get('/', async (request, response) => {
     if (!user) {
       return;
     }
-    user['password'] = undefined;
     user['key'] = undefined;
+    user['password'] = undefined;
+    user['cardData'] = undefined;
     makeResponse(response, 0, 'Success.', user);
 })
 
@@ -25,7 +26,7 @@ router.post('/new', async (request, response) => {
         makeResponse(response, 400, 'Invalid nick.');
         return
     }
-    if (!/^\d{1,2}$/.test(request.headers['x-pk'])) {
+    if (!/^\d{1,3}$/.test(request.headers['x-pk'])) {
         makeResponse(response, 400, 'Invalid pk.');
         return
     }
@@ -41,9 +42,10 @@ router.post('/new', async (request, response) => {
 
     // 构建新对象
     let user = {
-        nick: reqBody.nick,
         pk: request.headers['x-pk'],
+        nick: reqBody.nick,
         password: hash(request.headers['x-password']),
+        cardData: request.headers['x-carddata'],
     };
     const result = await dbUser.add(user);
     if (!result) {

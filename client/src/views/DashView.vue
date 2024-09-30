@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import { callApi } from '@/units/api';
-import { getUser } from '@/units/storage';
+import { getUser, setUser } from '@/units/storage';
 
 import NewTransactionView from '@/components/transaction/NewTransactionView.vue';
 
@@ -24,8 +24,7 @@ fetchBalance();
 const username = ref(getUser().pk);
 
 const logout = () => {
-  localStorage.removeItem('pk');
-  localStorage.removeItem('password');
+  setUser();
   location.reload();
 };
 </script>
