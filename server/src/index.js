@@ -12,7 +12,7 @@ configDotenv({
 const dbUser = new db('Users', {
     key: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     pk: { type: DataTypes.STRING, unique: true, allowNull: false },
-    nick: { type: DataTypes.STRING, allowNull: false },
+    nick: { type: DataTypes.STRING, allowNull: true },
     password: { type: DataTypes.STRING, allowNull: false },
     cardData: { type: DataTypes.STRING, allowNull: true },
 });

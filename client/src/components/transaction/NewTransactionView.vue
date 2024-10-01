@@ -19,7 +19,7 @@ const handleTransaction = transaction => {
   transactionState.value.loading = true;
   callApi('transaction/new', {
     method: 'POST',
-    body: JSON.stringify(transaction)
+    body: transaction
   }).then(() => {
     transactionState.value.loading = false;
     message.success(t('dash.transferSuccess'));

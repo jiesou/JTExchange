@@ -19,6 +19,10 @@ export async function callApi(path, options) {
       'Content-Type': 'application/json'
     }
   }
+  if (overrideOptions.body) {
+    overrideOptions.body = JSON.stringify(overrideOptions.body)
+    overrideOptions.headers['Content-Type'] = 'application/json'
+  }
   return fetch(import.meta.env.VITE_SERVER_BASEURL + path, overrideOptions)
     .then(response => response.json())
     .then(response => {
@@ -28,7 +32,7 @@ export async function callApi(path, options) {
       return response
     })
     .catch(error => {
-      console.error('Error:', error)
+      console.error(error)
       return Promise.reject(error)
     })
 }

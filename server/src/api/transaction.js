@@ -25,6 +25,19 @@ router.get('/fetch_balance', async (request, response) => {
     makeResponse(response, 0, 'Success.', { balance });
 })
 
+router.get('/fetch', async (request, response) => {
+  const user = await authentication(request, response);
+  if (!user) return;
+
+  const reqBody = reqParameterParser(request);
+
+  const transactions = await dbTransaction.fetch(
+    { from_pk: user.pk, to_pk: user.pk },
+    { limit: reqBody.limit || 10, offset: reqBody.offset || 0 }
+  );
+  makeResponse(response, 0, 'Success.', transactions);
+});
+
 router.post('/new', async (request, response) => {
     const user = await authentication(request, response);
     if (!user) return;

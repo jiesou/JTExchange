@@ -15,9 +15,14 @@
 // }
 
 function reqParamsParser(request) {
-    let arr
-    arr = request.body || request.query;
-    return arr
+  let params = {};
+
+  // 使用 Object.assign 合并 body 和 query
+  Object.assign(params, request.query || {});
+  Object.assign(params, request.body || {});
+
+  return params;
 }
+
 
 export default reqParamsParser;

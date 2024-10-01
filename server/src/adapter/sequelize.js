@@ -14,7 +14,7 @@ class db extends base {
             tableName: tableName,
             timestamps: false,
         });
-        sequelize.sync().then(() => {
+        sequelize.sync({ alter: true }).then(() => {
             console.debug(`Table ${tableName} synced.`);
         });
     }
@@ -31,9 +31,9 @@ class db extends base {
             }));
 
             const options = {
-                where: { [Op.or]: orConditions },
-                limit,
-                offset,
+              where: { [Op.or]: orConditions },
+              limit: limit,
+              offset: offset
             };
 
             if (desc) options.order = [[desc, 'DESC']];
@@ -54,9 +54,9 @@ class db extends base {
         try {
             // Construct AND conditions using Sequelize's default behavior
             const options = {
-                where,
-                limit,
-                offset,
+              where: where,
+              limit: limit,
+              offset: offset
             };
 
             if (desc) options.order = [[desc, 'DESC']];

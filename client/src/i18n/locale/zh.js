@@ -24,17 +24,28 @@ export default {
     },
     login: {
         title: '登录',
-        logging: '登录中...',
         pk: '用户名',
+        nick: '昵称',
         password: '密码',
+    },
+    register: {
+        title: '注册',
     },
     dash: {
         title: '面板',
         welcome: '欢迎，{name}',
         logout: '登出',
+        deleteAccount: '删除账户',
         balance: '余额：{amount}',
         transferTo: '转账给',
-        transfering: '转账中...',
         transferSuccess: '转账成功',
-    }
+    },
+    transaction: {
+        title: '交易',
+        innerid: '内部ID',
+        from: '来自',
+        to: '到',
+        amount: '金额',
+        comment: '备注',
+    },
 }

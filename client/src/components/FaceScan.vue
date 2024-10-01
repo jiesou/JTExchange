@@ -77,6 +77,7 @@ const loadLabeledImages = async () => {
 onMounted(async () => {
     await loadModels();
     startVideo();
+    setInterval(detectFaces, 50);
 });
 </script>
 
@@ -91,8 +92,8 @@ onMounted(async () => {
 <style scoped>
 video, canvas {
     position: absolute;
-    top: 0;
     left: 0;
+    align-self: center;
 }
 a-spin {
     position: relative;

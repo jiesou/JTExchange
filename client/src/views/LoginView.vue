@@ -32,8 +32,8 @@ const handleLogin = (loginResult) => {
         }
     }).then(res => {
         message.success(res.message);
-        setUser(res.data.pk, res.data.nick, loginResult.password, loginResult.cardData,);
-        router.push('/dash');
+        setUser(res.data.pk, res.data.nick, loginResult.password, loginResult.cardData);
+        router.push({ name: 'dash' });
     }).catch(error => {
         message.error(error.message);
         loginState.value.loading = false;
@@ -61,7 +61,10 @@ if (user) {
                 <a-input-password v-model:value="loginState.password" type="password" :placeholder="$t('login.password')"
                     required></a-input-password>
             </a-form-item>
-            <a-button type="primary" html-type="submit" :loading="loginState.loading">{{ $t('login.title') }}</a-button>
+            <a-space size="large">
+                <a-button type="primary" html-type="submit" :loading="loginState.loading">{{ $t('login.title') }}</a-button>
+                <router-link to="/register">{{ $t('register.title') }}</router-link>
+            </a-space>
         </a-form>
     </div>
     <CardReader @input-entered="handleCardInput" />
