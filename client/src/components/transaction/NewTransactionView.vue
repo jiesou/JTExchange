@@ -4,6 +4,8 @@ import { callApi } from '@/units/api';
 import { useI18n } from 'vue-i18n';
 import { message } from 'ant-design-vue';
 
+import VoiceTransfer from '@/components/transaction/VoiceTransfer.vue';
+
 const { t } = useI18n();
 
 const transactionState = ref({
@@ -46,6 +48,7 @@ const handleTransaction = transaction => {
     </a-form-item>
     <a-button type="primary" html-type="submit" :loading="transactionState.loading">{{ t('transfer') }}</a-button>
   </a-form>
+  <VoiceTransfer @finish="handleTransaction"></VoiceTransfer>
 </template>
 
 <style>
