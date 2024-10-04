@@ -55,7 +55,6 @@ export class IatRecorder {
       this.websocket.onopen = this.handleWebSocketOpen.bind(this);
       this.websocket.onmessage = this.handleWebSocketMessage.bind(this);
       this.websocket.onerror = this.handleWebSocketError.bind(this);
-      this.websocket.onclose = this.handleWebSocketClose.bind(this);
     } catch (error) {
       this.onError(error);
       console.error(error);
@@ -111,10 +110,6 @@ export class IatRecorder {
 
   handleWebSocketError(error) {
     this.onError(error);
-    this.stop();
-  }
-
-  handleWebSocketClose() {
     this.stop();
   }
 

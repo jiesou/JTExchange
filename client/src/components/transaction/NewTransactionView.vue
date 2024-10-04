@@ -32,6 +32,13 @@ const handleTransaction = transaction => {
   });
 };
 
+const handleVoiceCallback = (transaction) => {
+  transactionState.value.amount = transaction.amount;
+  transactionState.value.to = transaction.to;
+  transactionState.value.comment = transaction.comment;
+  handleTransaction(transaction);
+};
+
 </script>
 
 <template>
@@ -48,7 +55,7 @@ const handleTransaction = transaction => {
     </a-form-item>
     <a-button type="primary" html-type="submit" :loading="transactionState.loading">{{ t('transfer') }}</a-button>
   </a-form>
-  <VoiceTransfer @finish="handleTransaction"></VoiceTransfer>
+  <VoiceTransfer @finish="handleVoiceCallback"></VoiceTransfer>
 </template>
 
 <style>

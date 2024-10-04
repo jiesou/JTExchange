@@ -72,8 +72,6 @@ Assitant: \`\`\`json
     ]
   });
 
-  console.log(chatCompletion.choices[0].message)
-
   try {
     const responseMessage = chatCompletion.choices[0].message.content;
 
@@ -84,7 +82,13 @@ Assitant: \`\`\`json
 
     const responseObj = JSON.parse(responseJson);
 
-    makeResponse(response, 200, "Success", responseObj);
+    const transaction = {
+      to: responseObj.id,
+      amount: responseObj.amount,
+      comment: responseObj.comment
+    }
+
+    makeResponse(response, 200, "Success", transaction);
   } catch (e) {
     makeResponse(response, 400, "Failed to parse sentence");
   }

@@ -10,7 +10,7 @@
     </a-button>
     <a-textarea
       v-model:value="recognizedText"
-      readonly
+      
       placeholder="识别结果将显示在此处..."
     />
   </a-card>
@@ -20,12 +20,15 @@
 import { ref } from 'vue';
 import { IatRecorder } from './iatrecorder';
 import { message } from 'ant-design-vue';
+import { callApi } from '@/units/api';
 
 const recognizedText = ref('');
 const isRecording = ref(false);
 const isConnecting = ref(false);
 
 let recorder = null;
+
+const emit = defineEmits(['finish']);
 
 const texts = [];
 const onTextUpdate = (updateFun) => {
@@ -40,6 +43,15 @@ const onStart = () => {
 
 const onStop = () => {
   isRecording.value = false;
+  const text = recognizedText.value;
+  callApi("generator/transaction", {
+    method: "POST",
+    body: { sentence: text },
+  }).then((res) => {
+    emit('finish', res.data);
+  }).catch((error) => {
+    message.error(error);
+  });
 };
 
 const onError = (error) => {
