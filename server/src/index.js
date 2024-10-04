@@ -1,14 +1,15 @@
 import express from 'express';
 import cors from 'cors';
 import { configDotenv } from 'dotenv';
+configDotenv({
+  path: ['.env.development.local', '.env']
+});
+
 import makeResponse from './units/makeResponse.js';
 import db from './adapter/db.js';
 import { DataTypes } from 'sequelize';
 import apiRouter from './api/index.js';
 
-configDotenv({
-    path: ['.env.development.local', '.env']
-})
 const dbUser = new db('Users', {
     key: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     pk: { type: DataTypes.STRING, unique: true, allowNull: false },
