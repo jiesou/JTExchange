@@ -22,7 +22,7 @@ const columns = [
 
 const fetchData = async (page = pagination.current, pageSize = pagination.pageSize) => {
   loading.value = true;
-  callApi('transaction/fetch?' + new URLSearchParams({
+  callApi('transaction?' + new URLSearchParams({
     limit: pageSize,
     offset: (page - 1) * pageSize,
   })).then((res) => {

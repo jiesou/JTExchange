@@ -8,13 +8,17 @@ import reqParameterParser from "../units/reqParamsParser.js";
 const router = Router();
 
 router.get('/', async (request, response) => {
-    const user = await authentication(request, response);
-    if (!user) return;
+  const user = await authentication(request, response);
+  if (!user) return;
 
-    // 在数据库中查找账单
-    const transaction = await dbTransaction.fetch({ from_pk: user.pk, to_pk: user.pk });
-    makeResponse(response, 0, 'Success.', transaction);
-})
+  const reqBody = reqParameterParser(request);
+
+  const transactions = await dbTransaction.fetch(
+    { from_pk: user.pk, to_pk: user.pk },
+    { desc: 'time', limit: reqBody.limit || 10, offset: reqBody.offset || 0 }
+  );
+  makeResponse(response, 0, 'Success.', transactions);
+});
 
 router.get('/fetch_balance', async (request, response) => {
     const user = await authentication(request, response);
@@ -24,19 +28,6 @@ router.get('/fetch_balance', async (request, response) => {
 
     makeResponse(response, 0, 'Success.', { balance });
 })
-
-router.get('/fetch', async (request, response) => {
-  const user = await authentication(request, response);
-  if (!user) return;
-
-  const reqBody = reqParameterParser(request);
-
-  const transactions = await dbTransaction.fetch(
-    { from_pk: user.pk, to_pk: user.pk },
-    { limit: reqBody.limit || 10, offset: reqBody.offset || 0 }
-  );
-  makeResponse(response, 0, 'Success.', transactions);
-});
 
 router.post('/new', async (request, response) => {
     const user = await authentication(request, response);

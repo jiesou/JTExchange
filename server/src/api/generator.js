@@ -36,8 +36,8 @@ router.post('/transaction', async (request, response) => {
   const prompt = `用户ID - 真实姓名
 1 - 吴思辰
 2 - 戚珂嘉
-3 - 李康
-4 - 方乐天
+likang - 李康
+fang - 方乐天
 
 请总结用户所输入的文本，格式化为一个包含所需交易信息的 JSON 响应。要求：
 1. 用户ID需要依据以上表格查找对应。如果无法找到对应用户ID，则进行说明，不要返回 JSON 字段。

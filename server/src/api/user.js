@@ -38,7 +38,7 @@ router.post('/new', async (request, response) => {
       makeResponse(response, 400, 'Invalid nick.');
       return
   }
-  if (!/^\d{1,3}$/.test(request.headers['x-pk'])) {
+  if (!/^\w{1,16}$/.test(request.headers['x-pk'])) {
       makeResponse(response, 400, 'Invalid pk.');
       return
   }
