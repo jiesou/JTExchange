@@ -71,7 +71,7 @@ router.post('/new', async (request, response) => {
         amount: transactionAmount,
         comment: reqBody.comment,
     };
-    const newTransactionResult = dbTransaction.add(transaction);
+    const newTransactionResult = await dbTransaction.add(transaction);
 
     // 再次检查余额，确保没有并发问题
     const newBalance = await fetchBalance(user.pk);
@@ -82,7 +82,10 @@ router.post('/new', async (request, response) => {
         return;
     }
 
-    makeResponse(response, 0, 'Created.');
+    makeResponse(response, 0, 'Created.', {
+      transaction: newTransactionResult,
+      balance: newBalance
+    });
 });
 
 export default router;

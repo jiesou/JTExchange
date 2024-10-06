@@ -1,7 +1,8 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, h, resolveComponent } from 'vue';
 import { useRouter } from 'vue-router';
-import { message } from 'ant-design-vue';
+import { useI18n } from 'vue-i18n';
+import { message, Modal } from 'ant-design-vue';
 import { callApi } from '@/units/api';
 import { getUser, setUser } from '@/units/storage';
 
@@ -9,22 +10,10 @@ import NewTransactionView from '@/components/transaction/NewTransactionView.vue'
 import TransactionsList from '@/components/transaction/TransactionsList.vue';
 
 const router = useRouter();
+const { t } = useI18n();
 
 const balance = ref('--');
 const loading = ref(false);
-
-const fetchBalance = () => {
-  balance.value = '--';
-  loading.value = true;
-  callApi('transaction/fetch_balance').then((res) => {
-    balance.value = res.data.balance;
-    loading.value = false;
-  }).catch((error) => {
-    console.error(error);
-    loading.value = false;
-  });
-};
-fetchBalance();
 
 const username = ref(getUser().nick);
 
@@ -42,6 +31,40 @@ const deleteAccount = () => {
     message.error(error.message);
   });
 };
+
+const fetchBalance = () => {
+  balance.value = '--';
+  loading.value = true;
+  callApi('transaction/fetch_balance').then((res) => {
+    balance.value = res.data.balance;
+    loading.value = false;
+  }).catch((error) => {
+    console.error(error);
+    loading.value = false;
+  });
+};
+fetchBalance();
+
+const handleTransferSuccess = (result) => {
+  const message = t('dash.transferSuccessMessage', {
+    to: result.to,
+    amount: result.amount,
+    innerid: result.innerid,
+  });
+  const comment = result.comment;
+
+  Modal.success({
+    title: t('dash.transferSuccess'),
+    content: h('div', [
+      h('p', message),
+      h('p', t('dash.balance', { amount: result.balance })),
+      h('br'),
+      h('pre', comment),
+    ]),
+  });
+  balance.value = result.balance;
+};
+
 </script>
 
 <template>
@@ -61,10 +84,10 @@ const deleteAccount = () => {
       </a-button>
     </a-space>
   </div>
-  <div>
-    <NewTransactionView @finish="fetchBalance" />
+  <a-flex wrap="wrap" justify="center" gap="large" :style="{ marginTop: '10px' }">
+    <NewTransactionView @success="handleTransferSuccess"/>
     <TransactionsList :style="{ marginTop: '20px' }"/>
-  </div>
+  </a-flex>
 </template>
 
 <style>

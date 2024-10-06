@@ -82,7 +82,7 @@ class db extends base {
     async add(data) {
         try {
             const result = await this.table.create(data);
-            return result;
+            return result.dataValues;
         } catch (err) {
             console.error(err);
             return;
@@ -92,7 +92,7 @@ class db extends base {
     async update(data, where) {
         try {
             const result = await this.table.update(data, { where });
-            return result;
+            return result.dataValues;
         } catch (err) {
             console.error(err);
             return;

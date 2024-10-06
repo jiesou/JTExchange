@@ -1,34 +1,30 @@
-<template>
-  <a-card title="语音识别" style="margin: 20px auto">
-    <a-button
-      type="primary"
-      @click="toggleRecording"
-      :loading="isConnecting"
-      style="margin-bottom: 20px"
-    >
-      {{ isRecording ? "停止录音" : "开始录音" }}
-    </a-button>
-    <a-textarea
-      v-model:value="recognizedText"
-      
-      placeholder="识别结果将显示在此处..."
-    />
-  </a-card>
-</template>
-
 <script setup>
-import { ref } from 'vue';
-import { IatRecorder } from './iatrecorder';
+import { ref, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { message } from 'ant-design-vue';
 import { callApi } from '@/units/api';
+
+import { IatRecorder } from './iatrecorder';
+
+const { t } = useI18n();
 
 const recognizedText = ref('');
 const isRecording = ref(false);
 const isConnecting = ref(false);
-
-let recorder = null;
+const isUnderstanding = ref(false);
 
 const emit = defineEmits(['finish']);
+
+let recorder;
+onMounted(() => {
+  recorder = new IatRecorder({
+    onTextUpdate,
+    onStart,
+    onStop,
+    onError,
+  });
+});
+
 
 const texts = [];
 const onTextUpdate = (updateFun) => {
@@ -43,14 +39,17 @@ const onStart = () => {
 
 const onStop = () => {
   isRecording.value = false;
+  isUnderstanding.value = true;
   const text = recognizedText.value;
   callApi("generator/transaction", {
     method: "POST",
     body: { sentence: text },
   }).then((res) => {
     emit('finish', res.data);
-  }).catch((error) => {
-    message.error(error);
+  }).catch((err) => {
+    message.error(err.message);
+  }).finally(() => {
+    isUnderstanding.value = false;
   });
 };
 
@@ -64,8 +63,26 @@ function toggleRecording() {
     recorder.stop();
   } else {
     isConnecting.value = true;
-    recorder = new IatRecorder({ onTextUpdate, onError, onStart, onStop });
     recorder.start();
   }
 }
 </script>
+<template>
+  <a-card :title="t('voice.title')">
+    <a-spin :tip="t('voice.understanding')" :spinning="isUnderstanding">
+      <a-button
+          @click="toggleRecording"
+          :loading="isConnecting"
+          :danger="isRecording"
+          style="margin-bottom: 20px"
+          >
+          {{ isRecording ? t('voice.stop') : t('voice.start') }}
+      </a-button>
+        <a-textarea
+            v-model:value="recognizedText"
+            :placeholder="t('voice.content')"
+            />
+    </a-spin>
+  </a-card>
+</template>
+

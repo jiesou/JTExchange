@@ -39,6 +39,7 @@ export default {
         balance: '余额：{amount}',
         transferTo: '转账给',
         transferSuccess: '转账成功',
+        transferSuccessMessage: '转给 {to} {amount} 成功，内部ID：{innerid}',
     },
     transaction: {
         title: '交易',
@@ -47,5 +48,12 @@ export default {
         to: '到',
         amount: '金额',
         comment: '备注',
+    },
+    voice: {
+        title: '语音交易',
+        start: '开始录音',
+        stop: '停止录音',
+        understanding: '理解中……',
+        content: '所进行的操作将显示在此处……',
     },
 }

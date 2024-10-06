@@ -23,6 +23,7 @@ const dbTransaction = new db('Transactions', {
     to_pk: { type: DataTypes.STRING, allowNull: false },
     amount: { type: DataTypes.FLOAT, allowNull: false },
     time: { type: DataTypes.BIGINT, unique: true, allowNull: false },
+    comment: { type: DataTypes.STRING, allowNull: true },
 });
 
 const app = express();
