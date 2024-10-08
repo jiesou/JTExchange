@@ -27,8 +27,8 @@ const handleLogin = (loginResult) => {
         method: 'GET',
         headers: {
             'X-Pk': loginResult.pk,
-            'X-Password': loginResult.password ? loginResult.password : null,
-            'X-Carddata': loginResult.cardData ? loginResult.cardData : null
+            ...(loginResult.password && { 'X-Password': loginResult.password }),
+            ...(loginResult.cardData && { 'X-Carddata': loginResult.cardData })
         }
     }).then(res => {
         message.success(res.message);

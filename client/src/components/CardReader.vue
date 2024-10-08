@@ -18,7 +18,12 @@ const handleKeydown = (event) => {
         emit('input-entered', inputValue.value);
         inputValue.value = ''; // 清空输入框
     } else {
-        if (event.key.length === 1) inputValue.value += event.key;
+        if (event.key.length === 1 && !isNaN(event.key)) {
+            inputValue.value += event.key;
+            if (inputValue.value.length > 10) {
+            inputValue.value = inputValue.value.slice(-10);
+            }
+        }
     }
 };
 

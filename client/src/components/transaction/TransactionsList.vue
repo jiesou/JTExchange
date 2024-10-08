@@ -1,14 +1,14 @@
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { message } from 'ant-design-vue';
 import { callApi } from '@/units/api';
 
 const transactions = ref([]);
 const loading = ref(false);
-const pagination = reactive({
+const pagination = ref({
   current: 1,
   pageSize: 10,
-  total: 10,
+  total: 0,
 });
 
 const columns = [
@@ -20,15 +20,14 @@ const columns = [
   { title: 'Comment', dataIndex: 'comment', key: 'comment' },
 ];
 
-const fetchData = async (page = pagination.current, pageSize = pagination.pageSize) => {
+const fetchData = async (page, pageSize) => {
   loading.value = true;
   callApi('transaction?' + new URLSearchParams({
     limit: pageSize,
     offset: (page - 1) * pageSize,
   })).then((res) => {
-    console.log(res.data);
     transactions.value = res.data;
-    pagination.total = res.data.length;
+    pagination.value.total = res.data.length;
   }).catch((error) => {
     message.error(error.message);
   }).finally(() => {
@@ -38,9 +37,14 @@ const fetchData = async (page = pagination.current, pageSize = pagination.pageSi
 
 onMounted(fetchData);
 
-const handleTableChange = (pagination) => {
-  fetchData(pagination.current, pagination.pageSize);
+const handleTableChange = (newPagination) => {
+  pagination.value = newPagination || pagination.value;
+  fetchData(pagination.value.current, pagination.value.pageSize);
 };
+
+defineExpose({
+  handleTableChange,
+});
 </script>
 
 <template>

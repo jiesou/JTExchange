@@ -8,10 +8,6 @@ export default defineConfig({
     vue(),
   ],
   server: {
-    https: {
-      key: 'localhost-key.pem',
-      cert: 'localhost.pem',
-    },
     proxy: {
       '/api': {
         target: 'http://localhost:3000',

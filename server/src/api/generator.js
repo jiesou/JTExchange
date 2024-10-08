@@ -36,6 +36,8 @@ router.post('/transaction', async (request, response) => {
   const prompt = `|用户ID|真实姓名|
 |---|---|
 |wu|吴思辰|
+|92|学长1|
+|93|学长2|
 |qi|戚珂嘉|
 |likang|李康|
 |fang|方乐天|

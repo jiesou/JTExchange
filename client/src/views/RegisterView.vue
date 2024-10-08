@@ -27,8 +27,8 @@ const handleRegister = () => {
         method: 'POST',
         headers: {
             'X-Pk': registerState.value.pk,
-            'X-Password': registerState.value.password ? registerState.value.password : null,
-            'X-Carddata': registerState.value.cardData ? registerState.value.cardData : null
+            ...(registerState.value.password && { 'X-Password': registerState.value.password }),
+            ...(registerState.value.cardData && { 'X-Carddata': registerState.value.cardData })
         },
         body: {
             nick: registerState.value.nick,

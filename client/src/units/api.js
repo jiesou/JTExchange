@@ -13,10 +13,10 @@ export async function callApi(path, options) {
       return Promise.reject({ message: 'No user logged in' })
     }
     overrideOptions.headers = {
+      'Content-Type': 'application/json',
       'X-Pk': user.pk,
-      'X-Password': user.password,
-      'X-CardData': user.cardData,
-      'Content-Type': 'application/json'
+      ...(user.password && { 'X-Password': user.password }),
+      ...(user.cardData && { 'X-Carddata': user.cardData })
     }
   }
   if (overrideOptions.body) {

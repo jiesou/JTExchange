@@ -1,5 +1,5 @@
 <script setup>
-import { ref, h, resolveComponent } from 'vue';
+import { ref, h, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { message, Modal } from 'ant-design-vue';
@@ -14,8 +14,9 @@ const { t } = useI18n();
 
 const balance = ref('--');
 const loading = ref(false);
+const transactionsList = ref();
 
-const username = ref(getUser().nick);
+const nick = ref("User");
 
 const logout = () => {
   setUser();
@@ -42,7 +43,15 @@ const fetchBalance = () => {
     console.error(error);
     loading.value = false;
   });
+
+  nick.value = getUser().nick;
 };
+
+const handleRefresh = () => {
+  fetchBalance();
+  transactionsList.value.handleTableChange();
+}
+
 fetchBalance();
 
 const handleTransferSuccess = (result) => {
@@ -63,6 +72,7 @@ const handleTransferSuccess = (result) => {
     ]),
   });
   balance.value = result.balance;
+  transactionsList.value.handleTableChange();
 };
 
 </script>
@@ -70,7 +80,7 @@ const handleTransferSuccess = (result) => {
 <template>
   <div class="dash">
     <a-flex justify="space-between">
-      <a-typography-title :level="2">{{ $t('dash.welcome', { name: username }) }}</a-typography-title>
+      <a-typography-title :level="2">{{ $t('dash.welcome', { name: nick }) }}</a-typography-title>
       <a-space>
         <a-button @click="logout">{{ $t('dash.logout') }}</a-button>
         <a-button @click="deleteAccount" danger>{{ $t('dash.deleteAccount') }}</a-button>
@@ -79,14 +89,14 @@ const handleTransferSuccess = (result) => {
     <a-space size="middle" align="baseline">
       <a-typography-title :level="3">{{ $t('dash.balance', { amount: balance }) }}</a-typography-title>
 
-      <a-button @click="fetchBalance" :loading="loading"> 
+      <a-button @click="handleRefresh" :loading="loading"> 
         {{ $t('refresh') }}
       </a-button>
     </a-space>
   </div>
   <a-flex wrap="wrap" justify="center" gap="large" :style="{ marginTop: '10px' }">
     <NewTransactionView @success="handleTransferSuccess"/>
-    <TransactionsList :style="{ marginTop: '20px' }"/>
+    <TransactionsList :style="{ marginTop: '20px' }" ref="transactionsList" />
   </a-flex>
 </template>
 
