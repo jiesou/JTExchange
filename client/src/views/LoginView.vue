@@ -51,31 +51,25 @@ if (user) {
 </script>
 
 <template>
-    <div class="login-container">
-        <h1>{{ $t('login.title') }}</h1>
-        <a-form :model="loginState" @finish="handleLogin">
-            <a-form-item name="pk" :label="$t('login.pk')">
-                <a-input v-model:value="loginState.pk" :placeholder="$t('login.pk')" required></a-input>
-            </a-form-item>
-            <a-form-item name="password" :label="$t('login.password')">
-                <a-input-password v-model:value="loginState.password" type="password" :placeholder="$t('login.password')"
-                    required></a-input-password>
-            </a-form-item>
-            <a-space size="large">
-                <a-button type="primary" html-type="submit" :loading="loginState.loading">{{ $t('login.title') }}</a-button>
-                <router-link to="/register">{{ $t('register.title') }}</router-link>
-            </a-space>
-        </a-form>
-    </div>
-    <CardReader @input-entered="handleCardInput" />
+        <a-flex wrap="wrap" justify="center" gap="large" :style="{ marginTop: '10px' }">
+            <a-card :title="$t('login.title')" style="width: 300px;">
+            <a-form :model="loginState" @finish="handleLogin">
+                <a-form-item name="pk" :label="$t('login.pk')">
+                    <a-input v-model:value="loginState.pk" :placeholder="$t('login.pk')" required></a-input>
+                </a-form-item>
+                <a-form-item name="password" :label="$t('login.password')">
+                    <a-input-password v-model:value="loginState.password" type="password"
+                        :placeholder="$t('login.password')" required></a-input-password>
+                </a-form-item>
+                <a-space size="large">
+                    <a-button type="primary" html-type="submit" :loading="loginState.loading">{{ $t('login.title')}}</a-button>
+                    <router-link to="/register">{{ $t('register.title') }}</router-link>
+                </a-space>
+            </a-form>
+            </a-card>
+            <CardReader @input-entered="handleCardInput" />
+        </a-flex>
 </template>
 
 <style scoped>
-.login-container {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
 </style>

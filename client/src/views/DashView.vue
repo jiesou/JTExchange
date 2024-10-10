@@ -18,6 +18,7 @@ const transactionsList = ref();
 
 const nick = ref("User");
 
+
 const logout = () => {
   setUser();
   router.push({ name: 'login' });
@@ -54,6 +55,16 @@ const handleRefresh = () => {
 
 fetchBalance();
 
+onMounted(() => {
+  const welcomeElement = document.querySelector('.welcome');
+  if (welcomeElement) {
+    console.log(welcomeElement.innerHTML);
+  }
+  let speechInstance = new SpeechSynthesisUtterance(welcomeElement.innerHTML);
+  speechSynthesis.speak(speechInstance);
+});
+
+
 const handleTransferSuccess = (result) => {
   const message = t('dash.transferSuccessMessage', {
     to: result.to,
@@ -80,7 +91,7 @@ const handleTransferSuccess = (result) => {
 <template>
   <div class="dash">
     <a-flex justify="space-between">
-      <a-typography-title :level="2">{{ $t('dash.welcome', { name: nick }) }}</a-typography-title>
+      <a-typography-title :level="2" class="welcome">{{ $t('dash.welcome', { name: nick }) }}</a-typography-title>
       <a-space>
         <a-button @click="logout">{{ $t('dash.logout') }}</a-button>
         <a-button @click="deleteAccount" danger>{{ $t('dash.deleteAccount') }}</a-button>
@@ -89,13 +100,13 @@ const handleTransferSuccess = (result) => {
     <a-space size="middle" align="baseline">
       <a-typography-title :level="3">{{ $t('dash.balance', { amount: balance }) }}</a-typography-title>
 
-      <a-button @click="handleRefresh" :loading="loading"> 
+      <a-button @click="handleRefresh" :loading="loading">
         {{ $t('refresh') }}
       </a-button>
     </a-space>
   </div>
   <a-flex wrap="wrap" justify="center" gap="large" :style="{ marginTop: '10px' }">
-    <NewTransactionView @success="handleTransferSuccess"/>
+    <NewTransactionView @success="handleTransferSuccess" />
     <TransactionsList :style="{ marginTop: '20px' }" ref="transactionsList" />
   </a-flex>
 </template>

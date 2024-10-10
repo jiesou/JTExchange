@@ -44,25 +44,26 @@ const handleRegister = () => {
 </script>
 
 <template>
-    <div class="register-container">
-        <h1>{{ $t('register.title') }}</h1>
-        <a-form :model="registerState" @finish="handleRegister">
-            <a-form-item name="pk" :label="$t('login.pk')">
-                <a-input v-model:value="registerState.pk" :placeholder="$t('login.pk')" required></a-input>
-            </a-form-item>
-            <a-form-item name="nick" :label="$t('login.nick')">
-                <a-input v-model:value="registerState.nick" :placeholder="$t('login.nick')" required></a-input>
-            </a-form-item>
-            <a-form-item name="password" :label="$t('login.password')">
-                <a-input-password v-model:value="registerState.password" type="password" :placeholder="$t('login.password')" required></a-input-password>
-            </a-form-item>
-            <a-space size="large">
-                <a-button type="primary" html-type="submit" :loading="registerState.loading">{{ $t('register.title') }}</a-button>
-                <router-link to="/login">{{ $t('login.title') }}</router-link>
-            </a-space>
-        </a-form>
-    </div>
-    <CardReader @input-entered="handleCardInput" />
+    <a-flex wrap="wrap" justify="center" gap="large" :style="{ marginTop: '10px' }">
+        <a-card :title="$t('register.title')" style="width: 300px;">
+            <a-form :model="registerState" @finish="handleRegister">
+                <a-form-item name="pk" :label="$t('login.pk')">
+                    <a-input v-model:value="registerState.pk" :placeholder="$t('login.pk')" required></a-input>
+                </a-form-item>
+                <a-form-item name="nick" :label="$t('login.nick')">
+                    <a-input v-model:value="registerState.nick" :placeholder="$t('login.nick')" required></a-input>
+                </a-form-item>
+                <a-form-item name="password" :label="$t('login.password')">
+                    <a-input-password v-model:value="registerState.password" type="password" :placeholder="$t('login.password')" required></a-input-password>
+                </a-form-item>
+                <a-space size="large">
+                    <a-button type="primary" html-type="submit" :loading="registerState.loading">{{ $t('register.title') }}</a-button>
+                    <router-link to="/login">{{ $t('login.title') }}</router-link>
+                </a-space>
+            </a-form>
+        </a-card>
+        <CardReader @input-entered="handleCardInput" />
+    </a-flex>
 </template>
 
 <style scoped>
