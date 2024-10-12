@@ -1,8 +1,9 @@
 import { Router } from 'express';
+import OpenAI from "openai";
 import makeResponse from "../units/makeResponse.js";
 import authentication from "../units/user/authenticator.js";
 import reqParameterParser from "../units/reqParamsParser.js";
-import OpenAI from "openai";
+import fetchUsers from "../units/user/fetchUsers.js";
 
 const router = Router();
 
@@ -33,14 +34,15 @@ router.post('/transaction', async (request, response) => {
     return;
   }
 
+  const usersTemplate = [];
+  const users = await fetchUsers()
+  users.forEach(user => {
+    usersTemplate.push(`|${user.pk}|${user.nick}|`);
+  });
+
   const prompt = `|用户ID|真实姓名|
 |---|---|
-|wu|吴思辰|
-|92|学长1|
-|93|学长2|
-|qi|戚珂嘉|
-|likang|李康|
-|fang|方乐天|
+${usersTemplate.join("\n")}
 
 你是一个世界级超级智能语言处理模型。你需要总结用户所输入的文本，尝试格式化为一个包含所需交易信息的 JSON 响应。要求：
 1. 用户ID需要依据以上表格查找对应。如果对应用户不存在，则参照“高优先级条款”返回“找不到目标用户”。
@@ -83,7 +85,6 @@ Assitant: \`\`\`json
 }
 <<<
 \`\`\``;
-
   const chatCompletion = await openaiWrapper.inst.chat.completions.create({
     model: process.env.OPENAI_MODEL,
     temperature: 0.7,

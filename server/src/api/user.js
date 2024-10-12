@@ -5,6 +5,8 @@ import { dbUser } from '../index.js';
 import reqParameterParser from "../units/reqParamsParser.js";
 import { hashMD5, hash } from "../units/user/hash.js";
 
+import fetchUsers from "../units/user/fetchUsers.js";
+
 const router = Router();
 
 router.get('/', async (request, response) => {
@@ -17,6 +19,10 @@ router.get('/', async (request, response) => {
     user['password'] = undefined;
     user['cardData'] = undefined;
     makeResponse(response, 0, 'Success.', user);
+});
+
+router.get('/fetch', async (request, response) => {
+  makeResponse(response, 0, 'Success.', await fetchUsers());
 });
 
 router.delete('/delete', async (request, response) => {
