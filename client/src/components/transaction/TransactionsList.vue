@@ -12,7 +12,7 @@ const pagination = ref({
 });
 
 const columns = [
-  { title: 'ID', dataIndex: 'key', key: 'key' },
+  { title: 'ID', dataIndex: 'innerid', key: 'innerid' },
   { title: 'From', dataIndex: 'from_pk', key: 'from_pk' },
   { title: 'To', dataIndex: 'to_pk', key: 'to_pk' },
   { title: 'Date', dataIndex: 'time', key: 'date' },

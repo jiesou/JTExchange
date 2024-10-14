@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { callApi } from '@/units/api';
 import { useI18n } from 'vue-i18n';
 import { message } from 'ant-design-vue';
@@ -10,31 +10,49 @@ const { t } = useI18n();
 
 const transactionState = ref({
   amount: null,
-  to: null,
   comment: '',
   loading: false
 });
 
+const users = ref([]);
+const userNames = ref([]);
+
 const emit = defineEmits(['success']);
+
+const fetchUsers = () => {
+  callApi('user/fetch').then((res) => {
+    users.value = res.data;
+    userNames.value = users.value.map(user => ({
+      label: user.nick,
+      value: user.pk
+    }));
+  }).catch((err) => {
+    message.error(err.message);
+  });
+};
+
+onMounted(() => {
+  fetchUsers();
+});
 
 const handleTransaction = transaction => {
   transactionState.value.loading = true;
+  const transactions = [];
+  transactionState.value.to.forEach(to => {
+    transactions.push({
+      amount: transactionState.value.amount,
+      to_pk: to,
+      comment: transactionState.value.comment
+    });
+  });
   callApi('transaction/new', {
     method: 'POST',
-    body: transaction
+    body: { transactions: transactions }
   }).then((res) => {
     transactionState.value.loading = false;
-    const transaction = res.data.transaction;
-    emit('success', {
-      to: transaction.to_pk,
-      amount: transaction.amount,
-      comment: transaction.comment,
-      innerid: transaction.key,
-      balance: res.data.balance
-    });
+    emit('success', res.data);
   }).catch((err) => {
     transactionState.value.loading = false;
-    console.error(err);
     message.error(err.message);
   });
 };
@@ -59,8 +77,11 @@ const handleVoiceCallback = (transaction) => {
           />
       </a-form-item>
       <a-form-item name="to" :label="t('dash.transferTo')" required>
-        <a-input v-model:value="transactionState.to"
-          :placeholder="t('dash.transferTo')" />
+        <a-select
+          v-model:value="transactionState.to"
+          :placeholder="t('dash.transferTo')"
+          mode="multiple"
+          :options="userNames" />
       </a-form-item>
       <a-form-item name="comment" :label="t('comment')">
         <a-textarea v-model:value="transactionState.comment"

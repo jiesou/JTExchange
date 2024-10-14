@@ -11,14 +11,14 @@ import { DataTypes } from 'sequelize';
 import apiRouter from './api/index.js';
 
 const dbUser = new db('Users', {
-    key: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    innerid: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     pk: { type: DataTypes.STRING, unique: true, allowNull: false },
     nick: { type: DataTypes.STRING, allowNull: true },
     password: { type: DataTypes.STRING, allowNull: false },
     cardData: { type: DataTypes.STRING, allowNull: true },
 });
 const dbTransaction = new db('Transactions', {
-    key: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    innerid: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     from_pk: { type: DataTypes.STRING, allowNull: false },
     to_pk: { type: DataTypes.STRING, allowNull: false },
     amount: { type: DataTypes.FLOAT, allowNull: false },

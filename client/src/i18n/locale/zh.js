@@ -39,7 +39,7 @@ export default {
         balance: '余额：{amount}',
         transferTo: '转账给',
         transferSuccess: '转账成功',
-        transferSuccessMessage: '转给 {to} {amount} 成功，内部ID：{innerid}',
+        transferSuccessMessage: '转给 {to} {amount}，备注：{comment}',
     },
     transaction: {
         title: '交易',

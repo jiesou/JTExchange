@@ -38,10 +38,10 @@ const fetchBalance = () => {
   balance.value = '--';
   loading.value = true;
   callApi('transaction/fetch_balance').then((res) => {
-    balance.value = res.data.balance;
-    loading.value = false;
+    balance.value = res.data.balance.toString();
   }).catch((error) => {
-    console.error(error);
+    message.error(error.message);
+  }).finally(() => {
     loading.value = false;
   });
 
@@ -66,21 +66,20 @@ onMounted(() => {
 
 
 const handleTransferSuccess = (result) => {
-  const message = t('dash.transferSuccessMessage', {
-    to: result.to,
-    amount: result.amount,
-    innerid: result.innerid,
+  console.log(result);
+  const messages = result.transactions.map((transaction) => {
+    return t('dash.transferSuccessMessage', {
+      to: transaction.to_pk,
+      amount: transaction.amount,
+      comment: transaction.comment,
+    });
   });
-  const comment = result.comment;
 
   Modal.success({
     title: t('dash.transferSuccess'),
-    content: h('div', [
-      h('p', message),
-      h('p', t('dash.balance', { amount: result.balance })),
-      h('br'),
-      h('pre', comment),
-    ]),
+    content: h('div', {
+      innerHTML: messages.join('<br>') + '<br>' + t('dash.balance', { amount: result.balance })
+    }),
   });
   balance.value = result.balance;
   transactionsList.value.handleTableChange();

@@ -29,16 +29,9 @@ router.get('/fetch_balance', async (request, response) => {
     makeResponse(response, 0, 'Success.', { balance });
 })
 
-router.post('/new', async (request, response) => {
-    const user = await authentication(request, response);
-    if (!user) return;
-
-    const transactionTime = Date.now();
-
-    const reqBody = reqParameterParser(request);
-
+async function addSingleTransaction(transaction, user, transactionTime) {
     // 检查目标用户是否存在
-    const targetUser = await dbUser.fetch({ pk: reqBody.to || "0" }, { limit: 1 });
+    const targetUser = await dbUser.fetch({ pk: transaction.to_pk || "0" }, { limit: 1 });
     if (targetUser.length === 0) {
         makeResponse(response, 400, 'Target user is not exist.');
         return;
@@ -47,7 +40,7 @@ router.post('/new', async (request, response) => {
     // 检查交易金额是否合法
     let transactionAmount = 0;
     try {
-        transactionAmount = Number(reqBody.amount);
+        transactionAmount = Number(transaction.amount);
         if (isNaN(transactionAmount) || transactionAmount <= 0) {
             throw new Error('Invalid amount.');
         }
@@ -58,20 +51,19 @@ router.post('/new', async (request, response) => {
 
     // 检查余额是否足够
     const balance = await fetchBalance(user.pk);
-    if (balance < reqBody.amount) {
+    if (balance < transactionAmount) {
         makeResponse(response, 400, 'Insufficient balance.');
         return;
     }
 
     // 构建新交易
-    const transaction = {
+    const newTransactionResult = await dbTransaction.add({
         from_pk: user.pk,
-        to_pk: reqBody.to,
+        to_pk: transaction.to_pk,
         time: transactionTime,
         amount: transactionAmount,
-        comment: reqBody.comment,
-    };
-    const newTransactionResult = await dbTransaction.add(transaction);
+        comment: transaction.comment,
+    });
 
     // 再次检查余额，确保没有并发问题
     const newBalance = await fetchBalance(user.pk);
@@ -82,9 +74,29 @@ router.post('/new', async (request, response) => {
         return;
     }
 
+    return { newTransactionResult, newBalance };
+}
+
+router.post('/new', async (request, response) => {
+    const user = await authentication(request, response);
+    if (!user) return;
+
+    let transactionTime = Date.now();
+
+    const reqBodyTransactions = reqParameterParser(request).transactions;
+
+    const result = [];
+    let balance = 0;
+
+    for (const transaction of reqBodyTransactions) {
+        const { newTransactionResult, newBalance } = await addSingleTransaction(transaction, user, transactionTime++);
+        result.push(newTransactionResult);
+        balance = newBalance;
+    }
+
     makeResponse(response, 0, 'Created.', {
-      transaction: newTransactionResult,
-      balance: newBalance
+      transactions: result,
+      balance: balance
     });
 });
 
