@@ -57,11 +57,18 @@ const handleTransaction = transaction => {
   });
 };
 
-const handleVoiceCallback = (transaction) => {
-  transactionState.value.amount = transaction.amount;
-  transactionState.value.to = transaction.to;
-  transactionState.value.comment = transaction.comment;
-  handleTransaction(transaction);
+const handleVoiceCallback = (transactions) => {
+  transactionState.value.loading = true;
+  callApi('transaction/new', {
+    method: 'POST',
+    body: { transactions: transactions }
+  }).then((res) => {
+    transactionState.value.loading = false;
+    emit('success', res.data);
+  }).catch((err) => {
+    transactionState.value.loading = false;
+    message.error(err.message);
+  });
 };
 </script>
 
@@ -98,5 +105,4 @@ const handleVoiceCallback = (transaction) => {
   max-width: 400px;
   margin: 0 auto;
 }
-
 </style>
