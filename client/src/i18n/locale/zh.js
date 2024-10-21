@@ -48,6 +48,8 @@ export default {
         to: '到',
         amount: '金额',
         comment: '备注',
+        summarize: '分析总结',
+        summarizeDesc: '结果将显示在这里'
     },
     voice: {
         title: '语音交易',

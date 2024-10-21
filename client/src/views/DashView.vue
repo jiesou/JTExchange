@@ -7,6 +7,7 @@ import { callApi } from '@/units/api';
 import { getUser, setUser } from '@/units/storage';
 
 import NewTransactionView from '@/components/transaction/NewTransactionView.vue';
+import TransactionsSummarize from '@/components/transaction/TransactionsSummarize.vue';
 import TransactionsList from '@/components/transaction/TransactionsList.vue';
 
 const router = useRouter();
@@ -106,6 +107,7 @@ const handleTransferSuccess = (result) => {
   </div>
   <a-flex wrap="wrap" justify="center" gap="large" :style="{ marginTop: '10px' }">
     <NewTransactionView @success="handleTransferSuccess" />
+    <TransactionsSummarize transactions="交易1" />
     <TransactionsList :style="{ marginTop: '20px' }" ref="transactionsList" />
   </a-flex>
 </template>
