@@ -35,16 +35,15 @@ const handleSummarize = () => {
 <template>
   <a-card :title="t('transaction.summarize')">
     <a-spin :tip="t('voice.understanding')" :spinning="isUnderstanding">
-      <a-button
-          @click="handleSummarize"
-          style="margin-bottom: 20px"
-          >
-          {{ t('transaction.summarize') }}
+      <a-button @click="handleSummarize" style="margin-bottom: 20px">
+        {{ t('transaction.summarize') }}
       </a-button>
-        <a-textarea
-            v-model:value="result"
-            :placeholder="t('transaction.summarize')"
-            />
+      <a-divider v-if="result" />
+      <a-typography-paragraph v-if="result">
+        <pre>
+        {{ result }}
+        </pre>
+      </a-typography-paragraph>
     </a-spin>
   </a-card>
 </template>

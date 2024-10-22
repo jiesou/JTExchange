@@ -40,12 +40,12 @@ const fetchData = async (page, pageSize) => {
   });
 };
 
-onMounted(fetchData);
-
 const handleTableChange = (newPagination) => {
   pagination.value = newPagination || pagination.value;
   fetchData(pagination.value.current, pagination.value.pageSize);
 };
+
+onMounted(handleTableChange);
 
 defineExpose({
   handleTableChange,
