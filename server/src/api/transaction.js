@@ -62,7 +62,7 @@ async function addSingleTransaction(transaction, user, transactionTime, response
         to_pk: transaction.to_pk,
         time: transactionTime,
         amount: transactionAmount,
-        comment: transaction.comment,
+        comment: transaction.comment || '无备注'
     });
 
     // 再次检查余额，确保没有并发问题
