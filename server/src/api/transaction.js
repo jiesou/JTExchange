@@ -29,7 +29,7 @@ router.get('/fetch_balance', async (request, response) => {
     makeResponse(response, 0, 'Success.', { balance });
 })
 
-async function addSingleTransaction(transaction, user, transactionTime) {
+async function addSingleTransaction(transaction, user, transactionTime, response) {
     // 检查目标用户是否存在
     const targetUser = await dbUser.fetch({ pk: transaction.to_pk || "0" }, { limit: 1 });
     if (targetUser.length === 0) {
@@ -89,7 +89,7 @@ router.post('/new', async (request, response) => {
     let balance = 0;
 
     for (const transaction of reqBodyTransactions) {
-        const { newTransactionResult, newBalance } = await addSingleTransaction(transaction, user, transactionTime++);
+        const { newTransactionResult, newBalance } = await addSingleTransaction(transaction, user, transactionTime++, response);
         result.push(newTransactionResult);
         balance = newBalance;
     }

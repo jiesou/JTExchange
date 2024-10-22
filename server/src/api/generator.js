@@ -20,6 +20,35 @@ const openaiWrapper = {
   }
 }
 
+router.post('/summarize', async (request, response) => {
+  let user = await authentication(request, response);
+  if (!user) {
+    return;
+  }
+
+  const params = reqParameterParser(request);
+
+  const sentence = params.sentence;
+  if (!sentence) {
+    makeResponse(response, 400, "Missing sentence parameter");
+    return;
+  }
+
+  const prompt = `你是一个世界级超级智能语言处理模型。你需要总结用户所输入的文本，尝试对文本进行简要概括。要求：
+1. 文本可能由于识别错误或其他原因存在不完整或错误的地方，需要根据上下文进行推断。
+`
+  const chatCompletion = await openaiWrapper.inst.chat.completions.create({
+    model: process.env.OPENAI_MODEL,
+    temperature: 0.7,
+    messages: [
+      { role: 'system', content: prompt },
+      { role: 'user', content: sentence }
+    ]
+  });
+
+  makeResponse(response, 200, "Success", { result: chatCompletion.choices[0].message.content });
+});
+
 router.post('/transaction', async (request, response) => {
   let user = await authentication(request, response);
   if (!user) {
