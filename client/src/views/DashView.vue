@@ -105,10 +105,12 @@ const handleTransferSuccess = (result) => {
     </a-space>
   </div>
   <a-flex wrap="wrap" justify="center" gap="large" :style="{ marginTop: '10px' }">
-    <NewTransactionView @success="handleTransferSuccess" />
-    <TransactionsList :style="{ marginTop: '20px' }" ref="transactionsList" />
+    <NewTransactionView class="transactions-list" @success="handleTransferSuccess" />
+    <a-flex>
+      <TransactionsList ref="transactionsList" :style="{ width: '100%' }" class="transactions-list" />
+    </a-flex>
   </a-flex>
 </template>
 
-<style>
+<style scoped>
 </style>

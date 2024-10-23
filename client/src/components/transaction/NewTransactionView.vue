@@ -80,7 +80,7 @@ const handleVoiceCallback = (transactions) => {
         <a-input v-model:value="transactionState.amount"
           :placeholder="t('amount')"
           type="number"
-          suffix="$JTX"
+          suffix="$TX"
           />
       </a-form-item>
       <a-form-item name="to" :label="t('dash.transferTo')" required>

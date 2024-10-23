@@ -2,6 +2,7 @@ import { Router } from 'express';
 import makeResponse from "../units/makeResponse.js";
 import authentication from "../units/user/authenticator.js";
 import fetchBalance from "../units/transaction/fetchBalance.js";
+import fetchUser from "../units/user/fetchUser.js";
 import { dbUser, dbTransaction } from '../index.js';
 import reqParameterParser from "../units/reqParamsParser.js";
 
@@ -17,6 +18,18 @@ router.get('/', async (request, response) => {
     { from_pk: user.pk, to_pk: user.pk },
     { desc: 'time', limit: reqBody.limit || 10, offset: reqBody.offset || 0 }
   );
+  
+  for (const transaction of transactions) {
+    const transactionData = transaction.dataValues;
+    if (transactionData.from_pk === user.pk) {
+        transactionData.type = 'out';
+        transactionData.to_nick = (await fetchUser(transactionData.to_pk)).dataValues.nick || 'Unknown';
+    }
+    if (transactionData.to_pk === user.pk) {
+        transactionData.type = 'in';
+        transactionData.from_nick = (await fetchUser(transactionData.from_pk)).dataValues.nick || 'Unknown';
+    }
+  }
   makeResponse(response, 0, 'Success.', transactions);
 });
 

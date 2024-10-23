@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineProps } from 'vue';
+import { ref } from 'vue';
 import { message } from 'ant-design-vue';
 import { useI18n } from 'vue-i18n';
 import { callApi } from '@/units/api';
@@ -32,17 +32,19 @@ const handleSummarize = () => {
 </script>
 
 <template>
-  <a-card :title="t('transaction.summarize')">
+  <a-card :title="t('transaction.list')">
     <a-spin :tip="t('voice.understanding')" :spinning="isUnderstanding">
       <a-button @click="handleSummarize" style="margin-bottom: 20px">
         {{ t('transaction.summarize') }}
       </a-button>
-      <a-divider v-if="result" />
       <a-typography-paragraph v-if="result">
         <pre>
-        {{ result }}
+          {{ result }}
         </pre>
       </a-typography-paragraph>
+      
     </a-spin>
+    <a-divider v-if="result" />
+    <slot/>
   </a-card>
 </template>
