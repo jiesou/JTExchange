@@ -50,6 +50,19 @@ async function addSingleTransaction(transaction, user, transactionTime, response
         return;
     }
 
+    // 系统账户
+    if  (user.pk === '0') {
+        // 构建新交易
+        const newTransactionResult = await dbTransaction.add({
+            from_pk: user.pk,
+            to_pk: transaction.to_pk,
+            time: transactionTime,
+            amount: Number(transaction.amount),
+            comment: transaction.comment || '无备注'
+        });
+        return { newTransactionResult, newBalance: await fetchBalance(user.pk) };
+    }
+
     // 检查交易金额是否合法
     let transactionAmount = 0;
     try {
