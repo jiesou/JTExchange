@@ -15,6 +15,11 @@ const router = createRouter({
       component: () => import('../views/DashView.vue')
     },
     {
+      path: '/platform',
+      name: 'platform',
+      component: () => import('../views/PlatformView.vue')
+    },
+    {
       path: '/login',
       name: 'login',
       component: () => import('../views/LoginView.vue')

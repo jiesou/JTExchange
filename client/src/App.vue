@@ -17,6 +17,10 @@ const items = ref([
     key: '2',
     label: t('dash.title'),
   },
+  {
+    key: '3',
+    label: t('platform.title'),
+  },
 ]);
 
 const router = useRouter();
@@ -27,6 +31,9 @@ watch(selectedKeys, (val) => {
       break;
     case '2':
       router.push({ name: 'dash' });
+      break;
+    case '3':
+      router.push({ name: 'platform' });
       break;
   }
   drawerOpen.value = false;
