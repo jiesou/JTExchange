@@ -39,6 +39,16 @@ const onStart = () => {
 
 const onStop = () => {
   isRecording.value = false;
+  startUnderstand();
+};
+
+const onError = (error) => {
+  message.error(error);
+  isConnecting.value = false;
+};
+
+
+function startUnderstand() {
   isUnderstanding.value = true;
   const text = recognizedText.value;
   callApi("generator/transaction", {
@@ -51,12 +61,7 @@ const onStop = () => {
   }).finally(() => {
     isUnderstanding.value = false;
   });
-};
-
-const onError = (error) => {
-  message.error(error);
-  isConnecting.value = false;
-};
+}
 
 function toggleRecording() {
   if (isRecording.value) {
@@ -70,19 +75,16 @@ function toggleRecording() {
 <template>
   <a-card :title="t('voice.title')">
     <a-spin :tip="t('voice.understanding')" :spinning="isUnderstanding">
-      <a-button
-          @click="toggleRecording"
-          :loading="isConnecting"
-          :danger="isRecording"
-          style="margin-bottom: 20px"
-          >
+      <a-space style="margin-bottom: 20px">
+        <a-button @click="toggleRecording" :loading="isConnecting" :danger="isRecording">
           {{ isRecording ? t('voice.stop') : t('voice.start') }}
-      </a-button>
-        <a-textarea
-            v-model:value="recognizedText"
-            :placeholder="t('voice.content')"
-            />
+        </a-button>
+        <a-button @click="startUnderstand">
+          {{ t('voice.confirm') }}
+        </a-button>
+      </a-space>
+
+      <a-textarea v-model:value="recognizedText" :placeholder="t('voice.content')" />
     </a-spin>
   </a-card>
 </template>
-
