@@ -7,11 +7,6 @@ import TransactionsSummarize from '@/components/transaction/TransactionsSummariz
 
 const transactions = ref([]);
 const loading = ref(false);
-const pagination = ref({
-  current: 1,
-  pageSize: 10,
-  total: 0,
-});
 
 const columns = [
   { title: '时间', dataIndex: 'time', key: 'date' },
@@ -20,18 +15,17 @@ const columns = [
   { title: '备注', dataIndex: 'comment', key: 'comment' },
 ];
 
-const fetchData = async (page, pageSize) => {
+const fetchData = async () => {
   loading.value = true;
   callApi('transaction?' + new URLSearchParams({
-    limit: pageSize,
-    offset: (page - 1) * pageSize,
+    limit: 100,
+    offset: 0,
   })).then((res) => {
     transactions.value = res.data.map((transaction) => ({
       ...transaction,
       time: new Date(Number(transaction.time)).toLocaleString(),
       action: transaction.type === 'in' ? `${transaction.from_nick} 转入` : `转出给 ${transaction.to_nick} `,
     }));
-    pagination.value.total = res.data.length;
   }).catch((error) => {
     message.error(error.message);
   }).finally(() => {
@@ -39,9 +33,8 @@ const fetchData = async (page, pageSize) => {
   });
 };
 
-const handleTableChange = (newPagination) => {
-  pagination.value = newPagination || pagination.value;
-  fetchData(pagination.value.current, pagination.value.pageSize);
+const handleTableChange = () => {
+  fetchData();
 };
 
 onMounted(handleTableChange);
@@ -53,8 +46,7 @@ defineExpose({
 
 <template>
     <TransactionsSummarize :transactions="transactions">
-      <a-table :columns="columns" :data-source="transactions" :scroll="{ x: '1500' }" :width :pagination="pagination"
-        :expand-column-width="100" @change="handleTableChange" row-key="id" :loading="loading">
+      <a-table :columns="columns" :data-source="transactions" :scroll="{ x: '1500' }" @change="handleTableChange" :loading="loading">
         <template #bodyCell="{ record, column }">
           <template v-if="column.key === 'action'">
             <span>
