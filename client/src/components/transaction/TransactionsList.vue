@@ -1,8 +1,9 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { message } from 'ant-design-vue';
-import { callApi } from '@/units/api';
 
+import { callApi } from '@/units/api';
+import eventBus from '@/units/eventBus';
 import TransactionsSummarize from '@/components/transaction/TransactionsSummarize.vue';
 
 const transactions = ref([]);
@@ -44,16 +45,14 @@ const handleTableChange = (newPagination) => {
   fetchData(pagination.value.current, pagination.value.pageSize);
 };
 
-onMounted(handleTableChange);
+watch(() => eventBus.refresh, handleTableChange);
 
-defineExpose({
-  handleTableChange,
-});
+onMounted(handleTableChange);
 </script>
 
 <template>
     <TransactionsSummarize :transactions="transactions">
-      <a-table :columns="columns" :data-source="transactions" :scroll="{ x: '1500' }" :width :pagination="pagination"
+      <a-table :columns="columns" :data-source="transactions" :scroll="{ x: '1500' }" :pagination="pagination"
         :expand-column-width="100" @change="handleTableChange" row-key="id" :loading="loading">
         <template #bodyCell="{ record, column }">
           <template v-if="column.key === 'action'">

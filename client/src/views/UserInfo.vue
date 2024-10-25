@@ -3,27 +3,25 @@ import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { message } from 'ant-design-vue';
+
 import { callApi } from '@/units/api';
 import { getUser, setUser } from '@/units/storage';
-
 import eventBus from '@/units/eventBus';
 
 const router = useRouter();
 const { t } = useI18n();
 
 const show = ref(true);
-const showFunc = ref(true);
 const loading = ref(false);
-const info = ref(t('login.title'));
 const nick = ref(t('login.title'));
 
+// 已在登录页面则不显示信息（未登录状态为登录按钮）
 if (router.currentRoute.value.name === 'login') show.value = false;
 const user = getUser();
 if (user) {
     nick.value = user.nick;
-} else {
-    showFunc.value = false;
 }
+
 function handleMenuClick({ key }) {
     switch (key) {
         case '1':
@@ -48,7 +46,7 @@ function handleMenuClick({ key }) {
 const fetchBalance = () => {
     loading.value = true;
     callApi('transaction/fetch_balance').then((res) => {
-        info.value = t('dash.balance', { amount: res.data.balance.toString() });
+        eventBus.balance = res.data.balance;
     }).catch((error) => {
         message.error(error.message);
     }).finally(() => {
@@ -56,21 +54,19 @@ const fetchBalance = () => {
     });
 };
 
-const handleRefresh = () => {
-    eventBus.refresh = !eventBus.refresh;
-};
+watch(() => eventBus.refresh, fetchBalance);
 
+const broadcastRefresh = () => eventBus.refresh = !eventBus.refresh;
 
 onMounted(() => {
-    watch(() => eventBus.refresh, fetchBalance);
-    handleRefresh();
+    broadcastRefresh();
 });
 </script>
 
 <template>
     <a-dropdown v-if="show">
         <template #overlay>
-            <a-menu @click="handleMenuClick" v-if="showFunc">
+            <a-menu @click="handleMenuClick" v-if="user">
                 <a-menu-item key="1">
                     {{ nick }}
                 </a-menu-item>
@@ -82,8 +78,11 @@ onMounted(() => {
                 </a-menu-item>
             </a-menu>
         </template>
-        <a-button @click="handleRefresh" :loading="loading">
-            {{ info }}
+        <a-button @click="broadcastRefresh" :loading="loading" v-if="user">
+            {{ t('dash.balance', { amount: eventBus.balance }) }}
+        </a-button>
+        <a-button @click="router.push({ name: 'login' })" v-else>
+            {{ t('login.title') }}
         </a-button>
     </a-dropdown>
 </template>

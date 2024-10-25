@@ -3,8 +3,9 @@ import { ref, h, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { Modal } from 'ant-design-vue';
-import { getUser } from '@/units/storage';
 
+import { getUser } from '@/units/storage';
+import eventBus from '@/units/eventBus';
 import NewTransactionView from '@/components/transaction/NewTransactionView.vue';
 import TransactionsList from '@/components/transaction/TransactionsList.vue';
 
@@ -17,10 +18,9 @@ const nick = ref(t('login.title'));
 
 const user = getUser();
 if (!user) {
-  router.push({ name: 'login' });
+  // router.replace({ name: 'login' });
 }
 nick.value = getUser().nick;
-
 
 
 onMounted(() => {
@@ -49,7 +49,8 @@ const handleTransferSuccess = (result) => {
       innerHTML: messages.join('<br>') + '<br>' + t('dash.balance', { amount: result.balance })
     }),
   });
-  balance.value = result.balance;
+  eventBus.balance = result.balance;
+  eventBus.refresh = !eventBus.refresh;
   transactionsList.value.handleTableChange();
 };
 

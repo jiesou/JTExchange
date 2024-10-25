@@ -30,13 +30,13 @@ const router = useRouter();
 watch(selectedKeys, (val) => {
   switch (val[0]) {
     case '1':
-      router.push({ name: 'home' });
+      router.replace({ name: 'home' });
       break;
     case '2':
-      router.push({ name: 'dash' });
+      router.replace({ name: 'dash' });
       break;
     case '3':
-      router.push({ name: 'platform' });
+      router.replace({ name: 'platform' });
       break;
   }
   drawerOpen.value = false;
