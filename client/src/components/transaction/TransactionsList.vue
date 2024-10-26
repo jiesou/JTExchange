@@ -1,8 +1,9 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { message } from 'ant-design-vue';
-import { callApi } from '@/units/api';
 
+import { callApi } from '@/units/api';
+import eventBus from '@/units/eventBus';
 import TransactionsSummarize from '@/components/transaction/TransactionsSummarize.vue';
 
 const transactions = ref([]);
@@ -37,11 +38,9 @@ const handleTableChange = () => {
   fetchData();
 };
 
-onMounted(handleTableChange);
+watch(() => eventBus.refresh, handleTableChange);
 
-defineExpose({
-  handleTableChange,
-});
+onMounted(handleTableChange);
 </script>
 
 <template>

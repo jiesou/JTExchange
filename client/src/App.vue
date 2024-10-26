@@ -4,6 +4,9 @@ import { useRouter, RouterView } from 'vue-router'
 import { MenuOutlined } from '@ant-design/icons-vue';
 import zh_CN from 'ant-design-vue/es/locale/zh_CN';
 import { useI18n } from 'vue-i18n';
+
+import UserInfo from '@/views/UserInfo.vue';
+
 const { t } = useI18n();
 
 const selectedKeys = ref(['1']);
@@ -27,13 +30,13 @@ const router = useRouter();
 watch(selectedKeys, (val) => {
   switch (val[0]) {
     case '1':
-      router.push({ name: 'home' });
+      router.replace({ name: 'home' });
       break;
     case '2':
-      router.push({ name: 'dash' });
+      router.replace({ name: 'dash' });
       break;
     case '3':
-      router.push({ name: 'platform' });
+      router.replace({ name: 'platform' });
       break;
   }
   drawerOpen.value = false;
@@ -74,6 +77,7 @@ watch(selectedKeys, (val) => {
             <a-select-option value="en">en</a-select-option>
             <a-select-option value="zh">zh</a-select-option>
           </a-select>
+          <UserInfo  :style="{ position: 'absolute', right: '32px', top: '16px' }"/>
         </a-layout-header>
         <a-layout-content>
           <div :style="{ padding: '24px', minHeight: '360px', background: '#fff' }">

@@ -1,5 +1,4 @@
 import { getUser } from './storage.js'
-import { router } from '@/main'
 
 export async function callApi(path, options) {
 
@@ -9,7 +8,6 @@ export async function callApi(path, options) {
   if (!overrideOptions.headers) {
     const user = getUser()
     if (!user) {
-      router.push('/login')
       return Promise.reject({ message: 'No user logged in' })
     }
     overrideOptions.headers = {
