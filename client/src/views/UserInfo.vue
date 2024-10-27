@@ -48,7 +48,7 @@ const fetchBalance = () => {
     callApi('transaction/fetch_balance').then((res) => {
         eventBus.balance = res.data.balance;
     }).catch((error) => {
-        message.error(error.message);
+        // message.error(error.message);
     }).finally(() => {
         loading.value = false;
     });

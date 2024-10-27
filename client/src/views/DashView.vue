@@ -28,7 +28,7 @@ onMounted(() => {
   if (welcomeElement) {
     console.log(welcomeElement.innerHTML);
   }
-  let speechInstance = new SpeechSynthesisUtterance(welcomeElement.innerHTML);
+  let speechInstance = new SpeechSynthesisUtterance(t('dash.welcome', { name: nick.value }));
   speechSynthesis.speak(speechInstance);
 });
 
@@ -37,7 +37,7 @@ const handleTransferSuccess = (result) => {
   console.log(result);
   const messages = result.transactions.map((transaction) => {
     return t('dash.transferSuccessMessage', {
-      to: transaction.to_pk,
+      to: transaction.to_nick,
       amount: transaction.amount,
       comment: transaction.comment,
     });
@@ -51,7 +51,6 @@ const handleTransferSuccess = (result) => {
   });
   eventBus.balance = result.balance;
   eventBus.refresh = !eventBus.refresh;
-  transactionsList.value.handleTableChange();
 };
 
 </script>

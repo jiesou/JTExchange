@@ -35,7 +35,7 @@ router.post('/summarize', async (request, response) => {
   }
 
   const prompt = `你是一个世界级超级智能语言处理模型。你需要总结以下一系列行为交易记录，并尝试对行为交易记录得出简洁干练的解读。注意：
-1. 用户都是学生。交易记录中，用户会帮助他人，来从他人手里换取代币，也会通过向他人转账代币来获取帮助。
+1. 用户都是老人。交易记录中，用户会帮助其他，来从其他老人手里换取代币，也会通过向他人转账代币来请求帮助。
 2. 交易理由会通过 comment 呈现，你需要根据 comment 推断出用户之间的关系以及他们之间的互动行为。
 3. 交易记录默认按时间顺序排列，你不需要太留意交易时间。
 4. 文本可能由于识别错误或其他原因存在不完整或错误的地方，需要根据上下文进行推断。
@@ -44,12 +44,12 @@ router.post('/summarize', async (request, response) => {
 
 示例
 >>>
-User: A sent 0.4 to B on 2024/10/22 18:39:02 with comment: 带水
-A sent 0.4 to B on 2024/10/22 18:39:02 with comment: 修热水壶
-B sent 0.5 to A on 2024/10/22 18:39:02 with comment: 解数学题
+User: user sent 0.4 to B on 2024/10/22 18:39:02 with comment: 送米
+user sent 0.4 to B on 2024/10/22 18:39:02 with comment: 喂药
+B sent 1 to user on 2024/10/22 18:39:02 with comment: 下馆子
 Assitant: 观察到以下信息：
-- B 帮 A 修热水壶，带水
-- A 正在数学方面帮助 B。
+- B 为用户送米。
+- 用户于 10 月 22 日 晚上六点半给 B 请客下馆子，换取了 1 TX 代币。
 
 可以推断：
 - A 和 B 可能很要好
@@ -124,26 +124,26 @@ Assitant: 找不到目标用户
 User: 喂喂喂blah blah blah……
 Assitant: 无法识别用户的输入
 
-User: 给7可加嘉转0.5吧，他给我带了瓶水。
-Assitant: “7可加嘉”是识别错误，可能指“戚珂嘉”，所以交易信息如下
+User: 给老人尔转0.5吧，他给我请了客。
+Assitant: “老人尔”是识别错误，可能指“老人2”，所以交易信息如下
 \`\`\`json
 [
   {
-    "id": "qi",
+    "id": "elder2",
     "amount": 0.5,
-    "comment": "带水"
+    "comment": "请客"
   }
 ]
 \`\`\`
 
-User: 给7可加嘉转0.5，他给我带了瓶水。然后再给吴思晨转0.3。
-Assitant: “7可加嘉”是识别错误，可能指“戚珂嘉”。“吴思晨”是识别错误，可能指“吴思辰 ”，所以交易信息如下
+User: 给老人尔转1吧，他给我请了客。然后再给吴思晨转0.3。
+Assitant: “老人尔”是识别错误，可能指“老人2”。“吴思晨”是识别错误，可能指“吴思辰 ”，所以交易信息如下
 \`\`\`json
 [
   {
-    "id": "qi",
-    "amount": 0.5,
-    "comment": "带水"
+    "id": "elder2",
+    "amount": 1,
+    "comment": "请客"
   },
   {
     "id": "wu",
@@ -180,6 +180,30 @@ Assitant: “7可加嘉”是识别错误，可能指“戚珂嘉”。“吴思
   } catch (e) {
     makeResponse(response, 400, "Failed to parse sentence");
   }
+});
+
+router.post('/generate', async (request, response) => {
+  let user = await authentication(request, response);
+  if (!user) {
+    return;
+  }
+
+  const params = reqParameterParser(request);
+
+  const sentence = params.sentence;
+  if (!sentence) {
+    makeResponse(response, 400, "Missing sentence parameter");
+    return;
+  }
+  const chatCompletion = await openaiWrapper.inst.chat.completions.create({
+    model: process.env.OPENAI_MODEL,
+    temperature: 0.7,
+    messages: [
+      { role: 'user', content: sentence }
+    ]
+  });
+
+  makeResponse(response, 200, "Success", { result: chatCompletion.choices[0].message.content });
 });
 
 export default router;

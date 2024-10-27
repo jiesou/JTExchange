@@ -1,1 +1,1 @@
-curl http://127.0.0.1:3000/api/sudo/new_system_transaction -X POST -H "X-Key: RcmdXUV4fTf6" -d amount=100
+curl http://127.0.0.1:3000/api/sudo/new_system_transaction -X POST -H "X-Key: RcmdXUV4fTf6" -d to=elder1 -d amount=100

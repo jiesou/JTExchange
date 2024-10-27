@@ -44,5 +44,9 @@ app.listen(port, function () {
     console.debug('Server listening on port', port);
 });
 
+process.on('uncaughtException', err => {
+    console.error(err && err.stack)
+});
+
 export { dbUser, dbTransaction };
 export default app;
