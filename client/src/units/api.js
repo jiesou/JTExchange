@@ -21,7 +21,7 @@ export async function callApi(path, options) {
     overrideOptions.body = JSON.stringify(overrideOptions.body)
     overrideOptions.headers['Content-Type'] = 'application/json'
   }
-  return fetch(import.meta.env.VITE_SERVER_BASEURL + path, overrideOptions)
+  return fetch(`${window.location.origin}/api/${path}`, overrideOptions)
     .then(response => response.json())
     .then(response => {
       if (!response.code || response.code !== 200) {

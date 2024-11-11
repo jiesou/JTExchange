@@ -1,0 +1,150 @@
+diff --git a/client/src/units/api.js b/client/src/units/api.js
+index 7b3a252..e5cfbf9 100755
+--- a/client/src/units/api.js
++++ b/client/src/units/api.js
+@@ -21,7 +21,7 @@ export async function callApi(path, options) {
+     overrideOptions.body = JSON.stringify(overrideOptions.body)
+     overrideOptions.headers['Content-Type'] = 'application/json'
+   }
+-  return fetch(import.meta.env.VITE_SERVER_BASEURL + path, overrideOptions)
++  return fetch(`${window.location.origin}/api/${path}`, overrideOptions)
+     .then(response => response.json())
+     .then(response => {
+       if (!response.code || response.code !== 200) {
+diff --git a/server/src/api/transaction.js b/server/src/api/transaction.js
+index edd7b7a..66c6109 100755
+--- a/server/src/api/transaction.js
++++ b/server/src/api/transaction.js
+@@ -41,14 +41,14 @@ router.get('/fetch_balance', async (request, response) => {
+ 
+     const balance = await fetchBalance(user.pk);
+ 
+-    makeResponse(response, 0, 'Success.', { balance });
++    makeResponse(response, 0, '成功', { balance });
+ })
+ 
+ async function addSingleTransaction(transaction, user, transactionTime, response) {
+     // 检查目标用户是否存在
+     const targetUser = await dbUser.fetch({ pk: transaction.to_pk || "0" }, { limit: 1 });
+     if (targetUser.length === 0) {
+-        makeResponse(response, 400, 'Target user is not exist.');
++        makeResponse(response, 400, '目标用户不存在');
+         return;
+     }
+ 
+@@ -74,14 +74,14 @@ async function addSingleTransaction(transaction, user, transactionTime, response
+             throw new Error('Invalid amount.');
+         }
+     } catch (error) {
+-        makeResponse(response, 400, 'Invalid amount.');
++        makeResponse(response, 400, '金额无效');
+         return;
+     }
+ 
+     // 检查余额是否足够
+     const balance = await fetchBalance(user.pk);
+     if (balance < transactionAmount) {
+-        makeResponse(response, 400, 'Insufficient balance.');
++        makeResponse(response, 400, '余额不足');
+         return;
+     }
+ 
+@@ -99,7 +99,7 @@ async function addSingleTransaction(transaction, user, transactionTime, response
+     if (newBalance < 0) {
+         // 回滚操作
+         await dbTransaction.delete({ key: newTransactionResult.key });
+-        makeResponse(response, 400, 'Transaction failed due to concurrent modification.');
++        makeResponse(response, 400, '余额不足（并发）');
+         return;
+     }
+     newTransactionResult.to_nick = targetUser[0].nick;
+@@ -123,7 +123,7 @@ router.post('/new', async (request, response) => {
+         balance = newBalance;
+     }
+ 
+-    makeResponse(response, 0, 'Created.', {
++    makeResponse(response, 0, '成功', {
+       transactions: result,
+       balance: balance
+     });
+diff --git a/server/src/api/user.js b/server/src/api/user.js
+index 04bbc0c..7737b0d 100755
+--- a/server/src/api/user.js
++++ b/server/src/api/user.js
+@@ -18,11 +18,11 @@ router.get('/', async (request, response) => {
+     user['key'] = undefined;
+     user['password'] = undefined;
+     user['cardData'] = undefined;
+-    makeResponse(response, 0, 'Success.', user);
++    makeResponse(response, 0, '成功', user);
+ });
+ 
+ router.get('/fetch', async (request, response) => {
+-  makeResponse(response, 0, 'Success.', await fetchUsers());
++  makeResponse(response, 0, '成功', await fetchUsers());
+ });
+ 
+ router.delete('/delete', async (request, response) => {
+@@ -32,29 +32,29 @@ router.delete('/delete', async (request, response) => {
+   }
+   const result = await dbUser.delete({ pk: user.pk });
+   if (!result) {
+-    makeResponse(response, 500, 'Failed to delete user.');
++    makeResponse(response, 500, '删除用户失败');
+     return;
+   }
+-  makeResponse(response, 0, 'Deleted.');
++  makeResponse(response, 0, '成功删除用户');
+ });
+ 
+ router.post('/new', async (request, response) => {
+   const reqBody = reqParameterParser(request);
+   if (!/^.{2,12}$/.test(reqBody.nick)) {
+-      makeResponse(response, 400, 'Invalid nick.');
++      makeResponse(response, 400, '昵称无效');
+       return
+   }
+   if (!/^\w{1,16}$/.test(request.headers['x-pk'])) {
+-      makeResponse(response, 400, 'Invalid pk.');
++      makeResponse(response, 400, '用户名无效');
+       return
+   }
+-  if (!/^[\w\._+\-?!@#$%^&*()/]{8,64}$/.test(request.headers['x-password'])) {
+-      makeResponse(response, 400, 'Invalid password.');
++  if (!/^[\w\._+\-?!@#$%^&*()/]{6,64}$/.test(request.headers['x-password'])) {
++      makeResponse(response, 400, '密码无效');
+       return
+   }
+ 
+   if (await dbUser.fetch({ pk: request.headers['x-pk'] }, { limit: 1 }).length > 0) {
+-      makeResponse(response, 400, 'User already exists.');
++      makeResponse(response, 400, '同用户名的用户已存在');
+       return
+   }
+ 
+@@ -67,10 +67,10 @@ router.post('/new', async (request, response) => {
+   };
+   const result = await dbUser.add(user);
+   if (!result) {
+-      makeResponse(response, 500, 'Failed to create user.');
++      makeResponse(response, 500, '注册用户失败（数据库）');
+       return;
+   }
+-  makeResponse(response, 0, 'Created.');
++  makeResponse(response, 0, '注册用户成功', user);
+ });
+ 
+ export default router;
+diff --git a/server/src/units/user/authenticator.js b/server/src/units/user/authenticator.js
+index 8797959..9994972 100755
+--- a/server/src/units/user/authenticator.js
++++ b/server/src/units/user/authenticator.js
+@@ -28,7 +28,7 @@ async function authentication(request, response) {
+         return user;
+     }
+ 
+-    makeResponse(response, 403, 'Authentication failed.');
++    makeResponse(response, 403, '鉴权失败');
+     return;
+ }
+ 

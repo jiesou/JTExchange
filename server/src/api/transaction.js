@@ -41,14 +41,14 @@ router.get('/fetch_balance', async (request, response) => {
 
     const balance = await fetchBalance(user.pk);
 
-    makeResponse(response, 0, 'Success.', { balance });
+    makeResponse(response, 0, '成功', { balance });
 })
 
 async function addSingleTransaction(transaction, user, transactionTime, response) {
     // 检查目标用户是否存在
     const targetUser = await dbUser.fetch({ pk: transaction.to_pk || "0" }, { limit: 1 });
     if (targetUser.length === 0) {
-        makeResponse(response, 400, 'Target user is not exist.');
+        makeResponse(response, 400, '目标用户不存在');
         return;
     }
 
@@ -74,14 +74,14 @@ async function addSingleTransaction(transaction, user, transactionTime, response
             throw new Error('Invalid amount.');
         }
     } catch (error) {
-        makeResponse(response, 400, 'Invalid amount.');
+        makeResponse(response, 400, '金额无效');
         return;
     }
 
     // 检查余额是否足够
     const balance = await fetchBalance(user.pk);
     if (balance < transactionAmount) {
-        makeResponse(response, 400, 'Insufficient balance.');
+        makeResponse(response, 400, '余额不足');
         return;
     }
 
@@ -99,7 +99,7 @@ async function addSingleTransaction(transaction, user, transactionTime, response
     if (newBalance < 0) {
         // 回滚操作
         await dbTransaction.delete({ key: newTransactionResult.key });
-        makeResponse(response, 400, 'Transaction failed due to concurrent modification.');
+        makeResponse(response, 400, '余额不足（并发）');
         return;
     }
     newTransactionResult.to_nick = targetUser[0].nick;
@@ -123,7 +123,7 @@ router.post('/new', async (request, response) => {
         balance = newBalance;
     }
 
-    makeResponse(response, 0, 'Created.', {
+    makeResponse(response, 0, '成功', {
       transactions: result,
       balance: balance
     });

@@ -28,7 +28,7 @@ async function authentication(request, response) {
         return user;
     }
 
-    makeResponse(response, 403, 'Authentication failed.');
+    makeResponse(response, 403, '鉴权失败');
     return;
 }
 
