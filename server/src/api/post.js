@@ -1,52 +1,18 @@
-const router = require('express').Router();
-const db = require('../adapter/db.js');
-const makeResponse = require('../units/makeResponse.js');
-const reqParamsParser = require('../units/reqParamsParser.js');
+import { Router } from 'express';
+import { dbPost } from '../index.js';
+import makeResponse from '../units/makeResponse.js';
+import authentication from "../units/user/authenticator.js";
+import reqParamsParser from '../units/reqParamsParser.js';
 
-let Post = new db('Post');
-
-router.get('/list', async (request, response) => {
-    let reqBody = reqParamsParser(request);
-    /**
-     * @preserve reqBody 请求参数
-     * @property reqBody.page 页码
-     * @property reqBody.pageLength 单页长度
-     */
-    let page = ~~reqBody.page | 0;
-    if (page < 0) {
-        page = 0;
-    }
-    let pageLength = ~~reqBody.pageLength | 10;
-    if (pageLength < 1) {
-        pageLength = 1;
-    } else if (pageLength > 50) {
-        pageLength = 50;
-    }
-
-    makeResponse(response, 0, 'Success.', {
-        'currentPage': page,
-        // ~~ 能向下取整
-        'totalPage': ~~(await Post.count() / pageLength),
-        'posts': await Post.query(
-            {},
-            {
-                limit: pageLength,
-                offset: page * pageLength,
-                // 按 timeCreate 倒序
-                descending: 'timeCreate',
-                // 不需要某些属性
-                select: ['-content', '-comments.data']
-            })
-    });
-});
+const router = Router();
 
 router.get('/', async (request, response) => {
     let reqBody = reqParamsParser(request);
     // 判断 id 是否合法
-    if (/^[\da-f]{1,12}$/.test(String(reqBody.id))) {
+    if (/^[\da-f]{1,12}$/.test(String(reqBody.innerid))) {
         // 在数据库中查找帖子
-        let post = await Post.query({
-            id: reqBody.id
+        const post = await dbPost.select({
+            innerid: reqBody.id
         }, {
             limit: 1,
             select: ['-content', '-comments.data']
@@ -54,12 +20,43 @@ router.get('/', async (request, response) => {
         if (post) {
             makeResponse(response, 0, 'Success.', post);
         } else {
-            makeResponse(response, -41, 'Item not found.');
+            makeResponse(response, 400, '找不到该消息');
         }
     } else {
-        makeResponse(response, -31, 'Invalid id.');
+        const posts = await dbPost.select({},{
+            desc: 'time', limit: reqBody.limit || 10, offset: reqBody.offset || 0
+        });
+        console.log(posts);
+        makeResponse(response, 0, '成功获取', posts);
     }
 });
 
+// 添加新帖子
+router.post('/new', async (request, response) => {
+    const user = await authentication(request, response);
+    const reqBody = reqParamsParser(request);
+    const newPost = {
+        title: reqBody.title,
+        content: reqBody.content,
+        author: user.pk,
+        author_nick: user.nick,
+        time: Date.now()
+    };
+    const result = await dbPost.add(newPost);
+    makeResponse(response, 0, '成功', {
+        post: result
+    });
+});
 
-module.exports = router;
+// 删除帖子
+router.post('/delete', async (request, response) => {
+    const reqBody = reqParamsParser(request);
+    const result = await dbPost.delete({ innerid: reqBody.innerid });
+    if (result) {
+        makeResponse(response, 0, '成功');
+    } else {
+        makeResponse(response, 400, '找不到该消息');
+    }
+});
+
+export default router;
