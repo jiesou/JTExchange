@@ -8,7 +8,7 @@ export async function callApi(path, options) {
   if (!overrideOptions.headers) {
     const user = getUser()
     if (!user) {
-      return Promise.reject({ message: 'No user logged in' })
+      return Promise.reject({ message: '用户未登录' })
     }
     overrideOptions.headers = {
       'Content-Type': 'application/json',

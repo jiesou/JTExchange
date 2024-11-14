@@ -5,7 +5,7 @@ import { MenuOutlined } from '@ant-design/icons-vue';
 import zh_CN from 'ant-design-vue/es/locale/zh_CN';
 import { useI18n } from 'vue-i18n';
 
-import UserInfo from '@/views/UserInfo.vue';
+import UserInfo from '@/components/UserInfo.vue';
 
 const { t } = useI18n();
 

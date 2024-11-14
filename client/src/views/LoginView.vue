@@ -6,6 +6,7 @@ import { message } from 'ant-design-vue';
 import { useRouter } from 'vue-router'
 
 import CardReader from '@/components/CardReader.vue';
+import eventBus from '@/units/eventBus';
 
 const router = useRouter();
 
@@ -33,6 +34,7 @@ const handleLogin = (loginResult) => {
     }).then(res => {
         message.success(res.message);
         setUser(res.data.pk, res.data.nick, loginResult.password, loginResult.cardData);
+        eventBus.refresh = !eventBus.refresh;
         router.push({ name: 'dash' });
     }).catch(error => {
         message.error(error.message);

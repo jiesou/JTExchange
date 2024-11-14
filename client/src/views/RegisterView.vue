@@ -6,6 +6,7 @@ import { message } from 'ant-design-vue';
 import { useRouter } from 'vue-router'
 
 import CardReader from '@/components/CardReader.vue';
+import eventBus from '@/units/eventBus';
 
 const router = useRouter();
 
@@ -35,6 +36,7 @@ const handleRegister = () => {
         }
     }).then(res => {
         message.success(res.message);
+        eventBus.refresh = !eventBus.refresh;
         router.push('/login');  // 注册成功后跳转到登录页面
     }).catch(error => {
         message.error(error.message);
