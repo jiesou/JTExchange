@@ -5,11 +5,11 @@ export default {
     comment: '备注',
     transfer: '转账',
     app: {
-        title: 'TokenX 家庭社区养老'
+        title: '养老积分系统'
     },
     welcome: {
         title: '首页',
-        intro: 'TokenX 养老社区积分系统',
+        intro: '养老积分系统',
         introDesc: '这是首个适用于养老社区的积分体系',
         education: '养老教育',
         educationDesc: '我们深耕养老教育领域，致力于通过技术创新和模式探索，解决养老行业的痛点，积累了丰富的经验与资源。我们理解养老的核心需求，并将这些洞察转化为实践，推动养老行业价值认证体系的不断进化。',
@@ -36,7 +36,7 @@ export default {
         welcome: '欢迎，{name}',
         logout: '登出',
         deleteAccount: '删除账户',
-        balance: '余额：{amount} TX',
+        balance: '余额：{amount} 积分',
         transferTo: '转账给',
         transferSuccess: '转账成功',
         transferSuccessMessage: '转给 {to} {amount}，备注：{comment}',
