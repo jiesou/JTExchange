@@ -23,13 +23,11 @@ router.get('/', async (request, response) => {
     const transactionData = transaction.dataValues;
     if (transactionData.from_pk === user.pk) {
         transactionData.type = 'out';
-        const toUser = await fetchUser(transactionData.to_pk);
-        transactionData.to_nick = toUser ? toUser.dataValues.nick : 'Unknown';
+        transactionData.to_nick = (await fetchUser(transactionData.to_pk)).dataValues.nick || 'Unknown';
     }
     if (transactionData.to_pk === user.pk) {
         transactionData.type = 'in';
-        const fromUser = await fetchUser(transactionData.from_pk);
-        transactionData.from_nick = fromUser ? fromUser.dataValues.nick : 'Unknown';
+        transactionData.from_nick = (await fetchUser(transactionData.from_pk)).dataValues.nick || 'Unknown';
     }
   }
   makeResponse(response, 0, 'Success.', transactions);
@@ -62,7 +60,6 @@ async function addSingleTransaction(transaction, user, transactionTime, response
             amount: Number(transaction.amount),
             comment: transaction.comment || '无备注'
         });
-        
         return { newTransactionResult, newBalance: await fetchBalance(user.pk) };
     }
 
@@ -102,7 +99,7 @@ async function addSingleTransaction(transaction, user, transactionTime, response
         makeResponse(response, 400, '余额不足（并发）');
         return;
     }
-    newTransactionResult.to_nick = targetUser[0].nick;
+
     return { newTransactionResult, newBalance };
 }
 
