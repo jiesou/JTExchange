@@ -25,6 +25,14 @@ const dbTransaction = new db('Transactions', {
     time: { type: DataTypes.BIGINT, unique: true, allowNull: false },
     comment: { type: DataTypes.STRING, allowNull: true },
 });
+const dbPost = new db('Posts', {
+    innerid: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    title: { type: DataTypes.STRING, allowNull: false },
+    content: { type: DataTypes.STRING, allowNull: false },
+    author: { type: DataTypes.STRING, allowNull: false },
+    author_nick: { type: DataTypes.STRING, allowNull: false },
+    time: { type: DataTypes.BIGINT, unique: true, allowNull: false },
+});
 
 const app = express();
 
