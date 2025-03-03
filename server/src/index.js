@@ -56,5 +56,5 @@ process.on('uncaughtException', err => {
     console.error(err && err.stack)
 });
 
-export { dbUser, dbTransaction };
+export { dbUser, dbTransaction, dbPost };
 export default app;
