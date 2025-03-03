@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { configDotenv } from 'dotenv';
 configDotenv({
-  path: ['.env.development.local', '.env']
+    path: ['.env.development.local', '.env']
 });
 
 import makeResponse from './units/makeResponse.js';
@@ -24,14 +24,6 @@ const dbTransaction = new db('Transactions', {
     amount: { type: DataTypes.FLOAT, allowNull: false },
     time: { type: DataTypes.BIGINT, unique: true, allowNull: false },
     comment: { type: DataTypes.STRING, allowNull: true },
-});
-const dbPost = new db('Posts', {
-    innerid: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    title: { type: DataTypes.STRING, allowNull: false },
-    content: { type: DataTypes.STRING, allowNull: false },
-    author: { type: DataTypes.STRING, allowNull: false },
-    author_nick: { type: DataTypes.STRING, allowNull: false },
-    time: { type: DataTypes.BIGINT, unique: true, allowNull: false },
 });
 
 const app = express();
@@ -56,5 +48,5 @@ process.on('uncaughtException', err => {
     console.error(err && err.stack)
 });
 
-export { dbUser, dbTransaction, dbPost };
+export { dbUser, dbTransaction };
 export default app;

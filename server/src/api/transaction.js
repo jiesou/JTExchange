@@ -9,28 +9,30 @@ import reqParameterParser from "../units/reqParamsParser.js";
 const router = Router();
 
 router.get('/', async (request, response) => {
-  const user = await authentication(request, response);
-  if (!user) return;
+    const user = await authentication(request, response);
+    if (!user) return;
 
-  const reqBody = reqParameterParser(request);
+    const reqBody = reqParameterParser(request);
 
-  const transactions = await dbTransaction.fetch(
-    { from_pk: user.pk, to_pk: user.pk },
-    { desc: 'time', limit: reqBody.limit || 10, offset: reqBody.offset || 0 }
-  );
-  
-  for (const transaction of transactions) {
-    const transactionData = transaction.dataValues;
-    if (transactionData.from_pk === user.pk) {
-        transactionData.type = 'out';
-        transactionData.to_nick = (await fetchUser(transactionData.to_pk)).dataValues.nick || 'Unknown';
+    const transactions = await dbTransaction.fetch(
+        { from_pk: user.pk, to_pk: user.pk },
+        { desc: 'time', limit: reqBody.limit || 10, offset: reqBody.offset || 0 }
+    );
+
+    for (const transaction of transactions) {
+        const transactionData = transaction.dataValues;
+        if (transactionData.from_pk === user.pk) {
+            transactionData.type = 'out';
+            const toUser = await fetchUser(transactionData.to_pk);
+            transactionData.to_nick = toUser ? toUser.dataValues.nick : 'Unknown';
+        }
+        if (transactionData.to_pk === user.pk) {
+            transactionData.type = 'in';
+            const fromUser = await fetchUser(transactionData.from_pk);
+            transactionData.from_nick = fromUser ? fromUser.dataValues.nick : 'Unknown';
+        }
     }
-    if (transactionData.to_pk === user.pk) {
-        transactionData.type = 'in';
-        transactionData.from_nick = (await fetchUser(transactionData.from_pk)).dataValues.nick || 'Unknown';
-    }
-  }
-  makeResponse(response, 0, 'Success.', transactions);
+    makeResponse(response, 0, 'Success.', transactions);
 });
 
 router.get('/fetch_balance', async (request, response) => {
@@ -39,19 +41,19 @@ router.get('/fetch_balance', async (request, response) => {
 
     const balance = await fetchBalance(user.pk);
 
-    makeResponse(response, 0, '成功', { balance });
+    makeResponse(response, 0, 'Success.', { balance });
 })
 
 async function addSingleTransaction(transaction, user, transactionTime, response) {
     // 检查目标用户是否存在
     const targetUser = await dbUser.fetch({ pk: transaction.to_pk || "0" }, { limit: 1 });
     if (targetUser.length === 0) {
-        makeResponse(response, 400, '目标用户不存在');
+        makeResponse(response, 400, 'Target user is not exist.');
         return;
     }
 
     // 系统账户
-    if  (user.pk === '0') {
+    if (user.pk === '0') {
         // 构建新交易
         const newTransactionResult = await dbTransaction.add({
             from_pk: user.pk,
@@ -60,6 +62,7 @@ async function addSingleTransaction(transaction, user, transactionTime, response
             amount: Number(transaction.amount),
             comment: transaction.comment || '无备注'
         });
+
         return { newTransactionResult, newBalance: await fetchBalance(user.pk) };
     }
 
@@ -71,14 +74,14 @@ async function addSingleTransaction(transaction, user, transactionTime, response
             throw new Error('Invalid amount.');
         }
     } catch (error) {
-        makeResponse(response, 400, '金额无效');
+        makeResponse(response, 400, 'Invalid amount.');
         return;
     }
 
     // 检查余额是否足够
     const balance = await fetchBalance(user.pk);
     if (balance < transactionAmount) {
-        makeResponse(response, 400, '余额不足');
+        makeResponse(response, 400, 'Insufficient balance.');
         return;
     }
 
@@ -96,10 +99,10 @@ async function addSingleTransaction(transaction, user, transactionTime, response
     if (newBalance < 0) {
         // 回滚操作
         await dbTransaction.delete({ key: newTransactionResult.key });
-        makeResponse(response, 400, '余额不足（并发）');
+        makeResponse(response, 400, 'Transaction failed due to concurrent modification.');
         return;
     }
-
+    newTransactionResult.to_nick = targetUser[0].nick;
     return { newTransactionResult, newBalance };
 }
 
@@ -120,9 +123,9 @@ router.post('/new', async (request, response) => {
         balance = newBalance;
     }
 
-    makeResponse(response, 0, '成功', {
-      transactions: result,
-      balance: balance
+    makeResponse(response, 0, 'Created.', {
+        transactions: result,
+        balance: balance
     });
 });
 
