@@ -182,4 +182,28 @@ Assitant: “7可加嘉”是识别错误，可能指“戚珂嘉”。“吴思
   }
 });
 
+router.post('/generate', async (request, response) => {
+  let user = await authentication(request, response);
+  if (!user) {
+    return;
+  }
+
+  const params = reqParameterParser(request);
+
+  const sentence = params.sentence;
+  if (!sentence) {
+    makeResponse(response, 400, "Missing sentence parameter");
+    return;
+  }
+  const chatCompletion = await openaiWrapper.inst.chat.completions.create({
+    model: process.env.OPENAI_MODEL,
+    temperature: 0.7,
+    messages: [
+      { role: 'user', content: sentence }
+    ]
+  });
+
+  makeResponse(response, 200, "Success", { result: chatCompletion.choices[0].message.content });
+});
+
 export default router;

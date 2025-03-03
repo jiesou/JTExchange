@@ -14,10 +14,12 @@ const props = defineProps({
 });
 const result = ref(null);
 const isUnderstanding = ref(false);
+const generateMessage = ref('');
 
 const handleSummarize = () => {
   isUnderstanding.value = true;
-  const sentence = [...props.transactions].reverse().map((transaction) => `${transaction.from_pk} sent ${transaction.amount} to ${transaction.to_pk} on ${transaction.time} with comment: ${transaction.comment}`).join('\n');
+  const sentence = [...props.transactions].reverse().map((transaction) => `${transaction.from_nick || 'user'} sent ${transaction.amount} to ${transaction.to_nick || 'user'} on ${transaction.time} with comment: ${transaction.comment}`).join('\n');
+  console.log(sentence);
   callApi('generator/summarize', {
     method: 'POST',
     body: { sentence: sentence }
@@ -27,6 +29,23 @@ const handleSummarize = () => {
     message.error(error.message);
   }).finally(() => {
     isUnderstanding.value = false;
+  });
+};
+
+
+
+const handleGenerate = () => {
+  isUnderstanding.value = true;
+  result.value = `${result.value || ''}
+Human: ${generateMessage.value}`;
+  callApi('generator/generate', {
+    method: 'POST',
+    body: { sentence: result.value }
+  }).then((res) => {
+    isUnderstanding.value = false;
+    result.value = result.value + '\nAI: ' + res.data.result;
+  }).catch((error) => {
+    message.error(error.message);
   });
 };
 </script>

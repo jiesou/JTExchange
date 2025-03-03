@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { configDotenv } from 'dotenv';
 configDotenv({
-    path: ['.env.development.local', '.env']
+  path: ['.env.development.local', '.env']
 });
 
 import makeResponse from './units/makeResponse.js';
@@ -50,6 +50,10 @@ app.use(function (request, response) {
 let port = process.env.PORT || 3000;
 app.listen(port, function () {
     console.debug('Server listening on port', port);
+});
+
+process.on('uncaughtException', err => {
+    console.error(err && err.stack)
 });
 
 export { dbUser, dbTransaction, dbPost };

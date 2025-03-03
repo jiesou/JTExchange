@@ -102,7 +102,7 @@ async function addSingleTransaction(transaction, user, transactionTime, response
         makeResponse(response, 400, 'Transaction failed due to concurrent modification.');
         return;
     }
-
+    newTransactionResult.to_nick = targetUser[0].nick;
     return { newTransactionResult, newBalance };
 }
 

@@ -58,6 +58,7 @@ export default {
         stop: '停止录音',
         understanding: '理解中……',
         content: '所进行的操作将显示在此处……',
+        confirm: '确认',
     },
     platform: {
         title: '平台',
