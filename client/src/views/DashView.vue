@@ -17,11 +17,7 @@ const transactionsList = ref();
 const nick = ref(t('login.title'));
 
 const user = getUser();
-if (!user) {
-  // router.replace({ name: 'login' });
-}
-nick.value = getUser().nick;
-
+const isLoggedIn = ref(user);
 
 onMounted(() => {
   const welcomeElement = document.querySelector('.welcome');
@@ -31,7 +27,6 @@ onMounted(() => {
   let speechInstance = new SpeechSynthesisUtterance(t('dash.welcome', { name: nick.value }));
   speechSynthesis.speak(speechInstance);
 });
-
 
 const handleTransferSuccess = (result) => {
   console.log(result);
@@ -56,13 +51,17 @@ const handleTransferSuccess = (result) => {
 </script>
 
 <template>
-  <a-typography-title :level="2" class="welcome">{{ $t('dash.welcome', { name: nick }) }}</a-typography-title>
-  <a-flex wrap="wrap" justify="center" gap="large" :style="{ marginTop: '10px' }">
-    <NewTransactionView class="transactions-list" @success="handleTransferSuccess" />
-    <a-flex>
-      <TransactionsList ref="transactionsList" :style="{ width: '100%' }" class="transactions-list" />
+  <a-alert v-if="!isLoggedIn" :message="t('dash.loginPrompt')" type="info" show-icon>
+  </a-alert>
+  <div v-else>
+    <a-typography-title :level="2" class="welcome">{{ $t('dash.welcome', { name: nick }) }}</a-typography-title>
+    <a-flex wrap="wrap" justify="center" gap="large" :style="{ marginTop: '10px' }">
+      <NewTransactionView class="transactions-list" @success="handleTransferSuccess" />
+      <a-flex>
+        <TransactionsList ref="transactionsList" :style="{ width: '100%' }" class="transactions-list" />
+      </a-flex>
     </a-flex>
-  </a-flex>
+  </div>
 </template>
 
 <style scoped></style>
