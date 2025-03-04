@@ -37,14 +37,19 @@ const handleSummarize = () => {
       <a-button @click="handleSummarize" style="margin-bottom: 20px">
         {{ t('transaction.summarize') }}
       </a-button>
+      <a-input-group compact>
+        <a-input v-model:value="generateMessage" placeholder="追问……"
+          style="width: calc(100% - 200px); margin-bottom: 20px" @keyup.enter="handleGenerate" />
+        <a-button type="primary" @click="handleGenerate">发送</a-button>
+      </a-input-group>
       <a-typography-paragraph v-if="result">
         <pre>
           {{ result }}
         </pre>
       </a-typography-paragraph>
-      
+
     </a-spin>
     <a-divider v-if="result" />
-    <slot/>
+    <slot />
   </a-card>
 </template>

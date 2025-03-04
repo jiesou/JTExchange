@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { configDotenv } from 'dotenv';
 configDotenv({
-  path: ['.env.development.local', '.env']
+    path: ['.env.development.local', '.env']
 });
 
 import makeResponse from './units/makeResponse.js';
