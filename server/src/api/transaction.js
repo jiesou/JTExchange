@@ -63,6 +63,10 @@ async function addSingleTransaction(transaction, user, transactionTime, response
             comment: transaction.comment || '无备注'
         });
 
+        // 仅供前端显示
+        newTransactionResult['to_nick'] = targetUser[0].nick || 'Unknown';
+        console.log('Transaction added:', newTransactionResult);
+        
         return { newTransactionResult, newBalance: await fetchBalance(user.pk) };
     }
 
@@ -102,7 +106,10 @@ async function addSingleTransaction(transaction, user, transactionTime, response
         makeResponse(response, 400, 'Transaction failed due to concurrent modification.');
         return;
     }
-    newTransactionResult.to_nick = targetUser[0].nick;
+
+    // 仅供前端显示
+    newTransactionResult['to_nick'] = targetUser[0].nick || 'Unknown';
+    console.log('Transaction added:', newTransactionResult);
     return { newTransactionResult, newBalance };
 }
 

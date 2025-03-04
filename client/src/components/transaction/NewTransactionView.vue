@@ -50,7 +50,7 @@ const handleTransaction = transaction => {
     body: { transactions: transactions }
   }).then((res) => {
     transactionState.value.loading = false;
-    emit('success', res.data);
+    emit('success', res.data);  
   }).catch((err) => {
     transactionState.value.loading = false;
     message.error(err.message);
@@ -80,7 +80,7 @@ const handleVoiceCallback = (transactions) => {
         <a-input v-model:value="transactionState.amount"
           :placeholder="t('amount')"
           type="number"
-          suffix="个单位积分"
+          suffix="TX"
           />
       </a-form-item>
       <a-form-item name="to" :label="t('dash.transferTo')" required>
