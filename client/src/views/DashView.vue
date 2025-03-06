@@ -26,6 +26,8 @@ onMounted(() => {
   }
   let speechInstance = new SpeechSynthesisUtterance(t('dash.welcome', { name: nick.value }));
   speechSynthesis.speak(speechInstance);
+
+  nick.value = user.nick;
 });
 
 const handleTransferSuccess = (result) => {

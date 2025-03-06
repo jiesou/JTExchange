@@ -33,7 +33,7 @@ export default {
     },
     dash: {
         title: '面板',
-        loginPrompt: "尚未登录，请在左上角登录以继续使用",
+        loginPrompt: "尚未登录，请登录以继续使用",
         welcome: '欢迎，{name}',
         logout: '登出',
         deleteAccount: '删除账户',
