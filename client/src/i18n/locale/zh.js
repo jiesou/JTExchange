@@ -39,7 +39,7 @@ export default {
         welcome: '欢迎，{name}',
         logout: '登出',
         deleteAccount: '删除账户',
-        balance: '余额：{amount} 积分',
+        balance: '余额：{amount} TX',
         transferTo: '转账给',
         transferSuccess: '转账成功',
         transferSuccessMessage: '转给 {to} {amount}，备注：{comment}',
