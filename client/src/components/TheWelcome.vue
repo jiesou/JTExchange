@@ -10,7 +10,7 @@ import SupportIcon from './icons/IconSupport.vue'
 <template>
   <h2>{{ $t('welcome.intro') }}</h2>
   <h3>{{ $t('welcome.introDesc') }}</h3>
-  <a-flex wrap="wrap" gap="large" justify="center" :style="{ marginLeft: '10vw', marginRight: '10vw' }">
+  <a-flex wrap="wrap" gap="large" justify="center" :style="{ maxWidth: '80vw', justifySelf: 'center' }">
     <WelcomeItem :title="$t('welcome.education')" :description="$t('welcome.educationDesc')">
       <template #icon>
         <DocumentationIcon />
@@ -41,6 +41,11 @@ import SupportIcon from './icons/IconSupport.vue'
       </template>
     </WelcomeItem>
   </a-flex>
+
+  <a-flex justify="center" :style="{ marginTop: '30px' }">
+    <a-button type="primary" size="large" href="/register">{{ $t('welcome.registerNow') }}</a-button>
+    <a-button type="secondary" size="large" href="/dash">{{ $t('welcome.getStarted') }}</a-button>
+  </a-flex>
 </template>
 
 <style scoped>
@@ -51,6 +56,7 @@ h2 {
   margin-top: 20px;
   margin-bottom: 20px;
 }
+
 h3 {
   text-align: center;
   font-size: x-large;

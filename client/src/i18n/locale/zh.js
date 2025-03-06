@@ -5,12 +5,14 @@ export default {
     comment: '备注',
     transfer: '转账',
     app: {
-        title: 'TX 拓学无阻'
+        title: 'TX 拓学'
     },
     welcome: {
         title: '首页',
         intro: '拓学无阻 TokenX 代币积分平台',
-        introDesc: '校园互助积分系统，记录每一份友善与帮助',
+        introDesc: '记录每一份友善与帮助',
+        getStarted: '开始体验',
+        registerNow: '立即注册',
         education: '校园互助',
         educationDesc: '带水、帮同学解题、为别班同学修扫帚，校园生活中充满了同学之间的互帮互助。这些看似微不足道的行为都在无形中构建了同学们之间的关系，推动了集体的进步与团结。"拓学无阻"平台让我们能够把同学们间的互助留下痕迹，将点滴志愿行为计入档案。',
         tooling: '代币激励',

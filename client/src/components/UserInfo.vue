@@ -16,7 +16,12 @@ const loading = ref(false);
 const nick = ref(t('login.title'));
 const user = ref(getUser());
 
-nick.value = user.value.nick;
+onMounted(() => {
+    if (user.value) {
+        nick.value = user.value.nick || t('login.title');
+    }
+});
+
 
 // 已在登录页面则不显示信息（未登录状态为登录按钮）
 if (router.currentRoute.value.name === 'login') show.value = false;
@@ -56,6 +61,7 @@ const fetchBalance = () => {
 
 watch(() => eventBus.refresh, () => {
     user.value = getUser();
+    nick.value = user.value.nick;
     fetchBalance();
 });
 
