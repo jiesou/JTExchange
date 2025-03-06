@@ -16,6 +16,8 @@ const loading = ref(false);
 const nick = ref(t('login.title'));
 const user = ref(getUser());
 
+nick.value = user.value.nick;
+
 // 已在登录页面则不显示信息（未登录状态为登录按钮）
 if (router.currentRoute.value.name === 'login') show.value = false;
 
