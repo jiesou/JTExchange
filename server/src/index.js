@@ -33,6 +33,13 @@ const dbPost = new db('Posts', {
     author_nick: { type: DataTypes.STRING, allowNull: false },
     time: { type: DataTypes.BIGINT, unique: true, allowNull: false },
 });
+const dbVote = new db('Votes', {
+    innerid: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    user_pk: { type: DataTypes.STRING, allowNull: false },
+    post_id: { type: DataTypes.INTEGER, allowNull: false },
+    type: { type: DataTypes.STRING, allowNull: false }, // 'support' or 'oppose'
+    time: { type: DataTypes.BIGINT, allowNull: false },
+});
 
 const app = express();
 
@@ -56,5 +63,5 @@ process.on('uncaughtException', err => {
     console.error(err && err.stack)
 });
 
-export { dbUser, dbTransaction, dbPost };
+export { dbUser, dbTransaction, dbPost, dbVote };
 export default app;

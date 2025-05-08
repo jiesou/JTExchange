@@ -1,8 +1,9 @@
 import { Router } from 'express';
-import { dbPost } from '../index.js';
+import { dbPost, dbTransaction, dbVote } from '../index.js';
 import makeResponse from '../units/makeResponse.js';
 import authentication from "../units/user/authenticator.js";
 import reqParamsParser from '../units/reqParamsParser.js';
+import fetchBalance from '../units/transaction/fetchBalance.js';
 
 const router = Router();
 
@@ -31,10 +32,37 @@ router.get('/', async (request, response) => {
     }
 });
 
-import { dbTransaction } from '../index.js'; // 引入交易数据库
-import fetchBalance from '../units/transaction/fetchBalance.js'; // 引入余额查询工具
+// 获取投票结果
+router.get('/:postId/votes', async (request, response) => {
+    const { postId } = request.params;
 
-// 支持正方或反方
+    try {
+        // 计算支持和反对票数
+        const supportVotes = await dbVote.select({
+            post_id: postId,
+            type: 'support'
+        });
+        
+        const opposeVotes = await dbVote.select({
+            post_id: postId,
+            type: 'oppose'
+        });
+        
+        const supportCount = supportVotes.length;
+        const opposeCount = opposeVotes.length;
+
+        makeResponse(response, 0, '投票结果获取成功', { 
+            support: supportCount, 
+            oppose: opposeCount,
+            total: supportCount + opposeCount
+        });
+    } catch (error) {
+        console.error('Error fetching votes:', error);
+        makeResponse(response, 500, '获取投票结果失败');
+    }
+});
+
+// 支持正方或反方 - 整合投票和转账功能
 router.post('/:postId/:type', async (request, response) => {
     const user = await authentication(request, response);
     if (!user) return;
@@ -46,31 +74,45 @@ router.post('/:postId/:type', async (request, response) => {
         return makeResponse(response, 400, '无效的操作类型');
     }
 
-    // 转账目标用户 pk 为 -1 小法庭账号
-    const targetPk = '-1';
-    const amount = type === 'support' ? 1 : -1;
+    // 检查用户是否已经投票
+    const existingVote = await dbVote.select({
+        user_pk: user.pk,
+        post_id: postId
+    }, { limit: 1 });
 
-    // 检查余额是否足够（不用）
-    // const balance = await fetchBalance(user.pk);
-    // if (balance < Math.abs(amount)) {
-    //     return makeResponse(response, 400, '余额不足');
-    // }
-
-    // 创建交易记录
-    const transaction = {
-        from_pk: user.pk,
-        to_pk: targetPk,
-        time: Date.now(),
-        amount,
-        comment: `支持${type === 'support' ? '正方' : '反方'} - 小法庭事件 ID: ${postId}`
-    };
+    if (existingVote.length > 0) {
+        return makeResponse(response, 400, '您已经投过票了');
+    }
 
     try {
-        const result = await dbTransaction.add(transaction);
-        makeResponse(response, 0, '感谢您的参与', { transaction: result });
+        // 1. 创建投票记录
+        const vote = {
+            user_pk: user.pk,
+            post_id: postId,
+            type,
+            time: Date.now()
+        };
+        await dbVote.add(vote);
+
+        // 2. 创建交易记录 (小法庭账号 pk 为 -1)
+        const targetPk = '-1';
+        const amount = type === 'support' ? 1 : -1;
+        const transaction = {
+            from_pk: user.pk,
+            to_pk: targetPk,
+            time: Date.now(),
+            amount,
+            comment: `支持${type === 'support' ? '正方' : '反方'} - 小法庭事件 ID: ${postId}`
+        };
+        await dbTransaction.add(transaction);
+
+        makeResponse(response, 0, '投票成功', { 
+            post_id: postId, 
+            vote_type: type
+        });
     } catch (error) {
-        console.error('Transaction error:', error);
-        makeResponse(response, 500, '操作失败');
+        console.error('Vote/Transaction error:', error);
+        makeResponse(response, 500, '投票失败');
     }
 });
 

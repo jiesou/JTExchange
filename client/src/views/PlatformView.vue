@@ -15,6 +15,23 @@
             支持反方
           </a-button>
         </a-flex>
+        <a-flex justify="center" gap="middle" :style="{ marginTop: '16px' }">
+          <a-progress 
+            :percent="calculateVotePercentage(post.supportCount, post.opposeCount, 'support')" 
+            :stroke-color="{ from: '#108ee9', to: '#87d068' }"
+            :format="() => `${post.supportCount || 0} 票`"
+            status="active"
+          />
+          <a-progress 
+            :percent="calculateVotePercentage(post.supportCount, post.opposeCount, 'oppose')" 
+            :stroke-color="{ from: '#ff4d4f', to: '#ff7a45' }"
+            :format="() => `${post.opposeCount || 0} 票`"
+            status="active"
+          />
+        </a-flex>
+        <a-typography-paragraph v-if="post.supportCount !== undefined && post.opposeCount !== undefined">
+          支持正方: {{ post.supportCount }} | 支持反方: {{ post.opposeCount }}
+        </a-typography-paragraph>
       </a-card>
     </a-flex>
   </a-spin>
@@ -31,21 +48,22 @@ import eventBus from '@/units/eventBus';
 const posts = ref([]);
 const loading = ref(false);
 
+const fetchVotes = async (postId) => {
+  try {
+    const response = await callApi(`post/${postId}/votes`);
+    const { support, oppose } = response.data;
+    const post = posts.value.find(p => p.id === postId);
+    if (post) {
+      post.supportCount = support;
+      post.opposeCount = oppose;
+    }
+  } catch (error) {
+    console.error('Error fetching votes:', error);
+  }
+};
+
 const fetchPosts = async () => {
   loading.value = true;
-  // try {
-  //   const response = await fetch('/api/post');
-  //   posts.value = await response.json();
-  //   posts.value = posts.value.data;
-  // } catch (error) {
-  //   posts.value = [
-  //     { id: 1, title: 'Post 1', content: 'Post 1 contentyvagUBDSHv' },
-
-  //   ];
-  // } finally {
-  //   loading.value = false;
-  // }
-
   posts.value = [
     {
       id: 1,
@@ -109,6 +127,7 @@ const supportPost = async (postId, type) => {
     loading.value = false;
     message.success(res.message);
     localStorage.setItem(voteKey, true); // Mark as voted
+    fetchVotes(postId); // 更新投票结果
     updateDisableBtn();
   }).catch((err) => {
     loading.value = false;
