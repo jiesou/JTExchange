@@ -44,7 +44,7 @@ router.post('/new', async (request, response) => {
       makeResponse(response, 400, '昵称无效');
       return
   }
-  if (!/^\w{1,16}$/.test(request.headers['x-pk'])) {
+  if (!/^[\w-]{1,16}$/.test(request.headers['x-pk'])) {
       makeResponse(response, 400, '用户名无效');
       return
   }
