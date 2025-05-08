@@ -50,8 +50,8 @@ onMounted(handleTableChange);
           <template v-if="column.key === 'action'">
             <span>
               <span>{{ record.from_nick }}</span>
-              <a-tag v-if="record.type === 'in'" color="green" :style="{ marginInlineStart: '8px' }">转入</a-tag>
-              <a-tag v-else-if="record.type === 'out'" color="geekblue">转出给</a-tag>
+              <a-tag v-if="record.type === 'in'" color="green" :style="{ marginInlineStart: '8px' }">对</a-tag>
+              <a-tag v-else-if="record.type === 'out'" color="geekblue">对</a-tag>
               <span v-else>未知</span>
               <span>{{ record.to_nick }}</span>
             </span>

@@ -18,7 +18,7 @@ const generateMessage = ref('');
 
 const handleSummarize = () => {
   isUnderstanding.value = true;
-  const sentence = [...props.transactions].reverse().map((transaction) => `${transaction.from_nick || 'user'} sent ${transaction.amount} to ${transaction.to_nick || 'user'} on ${transaction.time} with comment: ${transaction.comment}`).join('\n');
+  const sentence = [...props.transactions].reverse().map((transaction) => `${transaction.from_nick || 'user'} updated ${transaction.amount} to ${transaction.to_nick || 'user'} on ${transaction.time} with comment: ${transaction.comment}`).join('\n');
   console.log(sentence);
   callApi('generator/summarize', {
     method: 'POST',
