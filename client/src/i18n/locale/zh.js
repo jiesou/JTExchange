@@ -65,5 +65,13 @@ export default {
     },
     platform: {
         title: '小法庭',
+    },
+    post: {
+        title: '标题',
+        list: '帖子列表',
+        new: '新建帖子',
+        content: '内容',
+        enableVote: '允许投票',
+        submit: '提交'
     }
 }

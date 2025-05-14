@@ -75,14 +75,14 @@ function toggleRecording() {
 <template>
   <a-card :title="t('voice.title')">
     <a-spin :tip="t('voice.understanding')" :spinning="isUnderstanding">
-      <a-space style="margin-bottom: 20px">
+      <div style="display: flex; justify-content: space-evenly; margin-bottom: 20px">
         <a-button @click="toggleRecording" :loading="isConnecting" :danger="isRecording">
           {{ isRecording ? t('voice.stop') : t('voice.start') }}
         </a-button>
-        <a-button @click="startUnderstand">
+        <a-button @click="startUnderstand" type="primary">
           {{ t('voice.confirm') }}
         </a-button>
-      </a-space>
+      </div>
 
       <a-textarea v-model:value="recognizedText" :placeholder="t('voice.content')" />
     </a-spin>

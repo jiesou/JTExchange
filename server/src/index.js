@@ -36,7 +36,7 @@ const dbPost = new db('Posts', {
 const dbVote = new db('Votes', {
     innerid: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     user_pk: { type: DataTypes.STRING, allowNull: false },
-    post_id: { type: DataTypes.INTEGER, allowNull: false },
+    post_innerid: { type: DataTypes.INTEGER, allowNull: false },
     type: { type: DataTypes.STRING, allowNull: false }, // 'support' or 'oppose'
     time: { type: DataTypes.BIGINT, allowNull: false },
 });

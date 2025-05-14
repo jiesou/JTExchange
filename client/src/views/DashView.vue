@@ -59,15 +59,8 @@ const handleTransferSuccess = (result) => {
   </a-alert>
   <div v-else>
     <a-typography-title :level="2" class="welcome">{{ $t('dash.welcome', { name: nick }) }}</a-typography-title>
-    <a-flex wrap="wrap" justify="center" gap="large" :style="{ marginTop: '10px' }">
-      <NewTransactionView class="transactions-list" @success="handleTransferSuccess" />
-      <a-flex>
-      </a-flex>
-    </a-flex>
-
-    <a-flex wrap="wrap" justify="center" gap="large" :style="{ marginTop: '10px' }">
-        <TransactionsList ref="transactionsList" :style="{ width: '100%', maxWidth: '980px' }" class="transactions-list" />
-</a-flex>
+    <NewTransactionView @success="handleTransferSuccess" />
+    <TransactionsList ref="transactionsList" style="width: 100%; max-width: 980px; margin: 16px auto;"/>
   </div>
 </template>
 

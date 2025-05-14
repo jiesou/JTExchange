@@ -24,7 +24,7 @@ router.get('/', async (request, response) => {
             makeResponse(response, 400, '找不到该消息');
         }
     } else {
-        const posts = await dbPost.select({},{
+        const posts = await dbPost.select({}, {
             desc: 'time', limit: reqBody.limit || 10, offset: reqBody.offset || 0
         });
         console.log(posts);
@@ -32,34 +32,33 @@ router.get('/', async (request, response) => {
     }
 });
 
+
+
+async function calculateVoteCounts(postId) {
+    const supportVotes = await dbVote.select({
+        post_innerid: postId,
+        type: 'support'
+    });
+    const opposeVotes = await dbVote.select({
+        post_innerid: postId,
+        type: 'oppose'
+    });
+    return {
+        supportCount: supportVotes.length,
+        opposeCount: opposeVotes.length
+    };
+}
+
 // 获取投票结果
 router.get('/:postId/votes', async (request, response) => {
     const { postId } = request.params;
 
-    try {
-        // 计算支持和反对票数
-        const supportVotes = await dbVote.select({
-            post_id: postId,
-            type: 'support'
-        });
-        
-        const opposeVotes = await dbVote.select({
-            post_id: postId,
-            type: 'oppose'
-        });
-        
-        const supportCount = supportVotes.length;
-        const opposeCount = opposeVotes.length;
+    const { supportCount, opposeCount } = await calculateVoteCounts(postId);
 
-        makeResponse(response, 0, '投票结果获取成功', { 
-            support: supportCount, 
-            oppose: opposeCount,
-            total: supportCount + opposeCount
-        });
-    } catch (error) {
-        console.error('Error fetching votes:', error);
-        makeResponse(response, 500, '获取投票结果失败');
-    }
+    makeResponse(response, 0, '投票结果获取成功', {
+        supportCount: supportCount,
+        opposeCount: opposeCount
+    });
 });
 
 // 支持正方或反方 - 整合投票和转账功能
@@ -84,36 +83,22 @@ router.post('/:postId/:type', async (request, response) => {
         return makeResponse(response, 400, '您已经投过票了');
     }
 
-    try {
-        // 1. 创建投票记录
-        const vote = {
-            user_pk: user.pk,
-            post_id: postId,
-            type,
-            time: Date.now()
-        };
-        await dbVote.add(vote);
+    // 创建投票记录
+    await dbVote.add({
+        user_pk: user.pk,
+        post_innerid: postId,
+        type,
+        time: Date.now()
+    });
 
-        // 2. 创建交易记录 (小法庭账号 pk 为 -1)
-        const targetPk = '-1';
-        const amount = type === 'support' ? 1 : -1;
-        const transaction = {
-            from_pk: user.pk,
-            to_pk: targetPk,
-            time: Date.now(),
-            amount,
-            comment: `支持${type === 'support' ? '正方' : '反方'} - 小法庭事件 ID: ${postId}`
-        };
-        await dbTransaction.add(transaction);
+    const { supportCount, opposeCount } = await calculateVoteCounts(postId);
 
-        makeResponse(response, 0, '投票成功', { 
-            post_id: postId, 
-            vote_type: type
-        });
-    } catch (error) {
-        console.error('Vote/Transaction error:', error);
-        makeResponse(response, 500, '投票失败');
-    }
+    makeResponse(response, 0, '投票成功', {
+        post_innerid: postId,
+        type: type,
+        supportCount: supportCount,
+        opposeCount: opposeCount
+    });
 });
 
 // 添加新帖子
