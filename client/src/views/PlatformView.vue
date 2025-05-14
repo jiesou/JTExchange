@@ -23,7 +23,7 @@
             :percent="post.opposeCount / (post.supportCount + post.opposeCount) * 100"
             :stroke-color="{ from: '#ff4d4f', to: '#ff7a45' }" :show-info="false" status="active" />
         </div>
-        <a-flex justify="center" gap="small" :style="{ marginTop: '12px' }">
+        <a-flex v-if="post.enable_vote" justify="center" gap="small" :style="{ marginTop: '12px' }">
           <a-button type="primary" @click="votePost(post.innerid, 'support')" :disabled="post.supportDisabled">
             支持正方
           </a-button>

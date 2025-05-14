@@ -10,7 +10,7 @@ const { t } = useI18n();
 const initialNewPostState = {
     title: '',
     content: '',
-    enableVote: false,
+    enableVote: true,
     loading: false
 };
 
