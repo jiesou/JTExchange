@@ -38,6 +38,7 @@ const dbVote = new db('Votes', {
     user_pk: { type: DataTypes.STRING, allowNull: false },
     post_innerid: { type: DataTypes.INTEGER, allowNull: false },
     type: { type: DataTypes.STRING, allowNull: false }, // 'support' or 'oppose'
+    enable_vote: { type: DataTypes.BOOLEAN },
     time: { type: DataTypes.BIGINT, allowNull: false },
 });
 

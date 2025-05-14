@@ -1,76 +1,58 @@
 <template>
   <NewPost @refresh="fetchPosts" />
   <a-spin :spinning="loading" delay=500>
-    <a-flex wrap="wrap" gap="small">
-      <a-card v-for="post in posts" :key="post.id" style="max-width: 480px;">
+    <a-flex wrap="warp" gap="small" style="width: 100%; max-width: 600px; margin: 16px auto;"> 
+      <a-card v-for="post in posts" :key="post.id" style="max-width: 480px; min-width: 480px; margin-bottom: 8px;">
         <template #title>
           <a-card-meta :title="post.title"
             :description="post.author_nick + ' 于 ' + new Date(Number(post.time)).toLocaleString()"
             style="margin: 12px 0 8px 0;">
           </a-card-meta>
         </template>
-        <template #extra>
-          <a-button danger shape="circle" :icon="h(DeleteOutlined)" @click="() => deletePost(post.id)"></a-button>
+        <template #extra v-if="post.author === getUser().pk">
+          <a-button danger shape="circle" :icon="h(DeleteOutlined)" @click="() => deletePost(post.innerid)"
+            :loading="deleteBtnStates[post.innerid]"></a-button>
         </template>
         <pre style="white-space: pre-wrap;">{{ post.content }}</pre><!--  允许换行 -->
 
+        <div style="margin-top: 16px; position: relative;" v-if="post.supportCount">
+          <a-progress style="position: absolute;"
+            :percent="post.supportCount / (post.supportCount + post.opposeCount) * 100"
+            :stroke-color="{ from: '#108ee9', to: '#87d068' }" :show-info="false" status="active" />
+          <a-progress style="transform: rotateY(180deg);"
+            :percent="post.opposeCount / (post.supportCount + post.opposeCount) * 100"
+            :stroke-color="{ from: '#ff4d4f', to: '#ff7a45' }" :show-info="false" status="active" />
+        </div>
         <a-flex justify="center" gap="small" :style="{ marginTop: '12px' }">
-          <a-button type="primary" @click="supportPost(post.id, 'support')" :disabled="post.supportDisabled">
+          <a-button type="primary" @click="votePost(post.innerid, 'support')" :disabled="post.supportDisabled">
             支持正方
           </a-button>
-          <a-button type="primary" @click="supportPost(post.id, 'oppose')" :disabled="post.opposeDisabled">
+          <a-button type="primary" @click="votePost(post.innerid, 'oppose')" :disabled="post.opposeDisabled">
             支持反方
           </a-button>
         </a-flex>
-        <!-- <a-flex justify="center" gap="middle" :style="{ marginTop: '16px' }" v-if="post.supportCount" >
-          <a-progress 
-            :percent="calculateVotePercentage(post.supportCount, post.opposeCount, 'support')" 
-            :stroke-color="{ from: '#108ee9', to: '#87d068' }"
-            :format="() => `${post.supportCount || 0} 票`"
-            status="active"
-          />
-          <a-progress 
-            :percent="calculateVotePercentage(post.supportCount, post.opposeCount, 'oppose')" 
-            :stroke-color="{ from: '#ff4d4f', to: '#ff7a45' }"
-            :format="() => `${post.opposeCount || 0} 票`"
-            status="active"
-          />
-        </a-flex> -->
-        <a-typography-paragraph v-if="post.supportCount !== undefined && post.opposeCount !== undefined">
-          支持正方: {{ post.supportCount }} | 支持反方: {{ post.opposeCount }}
-        </a-typography-paragraph>
       </a-card>
     </a-flex>
   </a-spin>
-  <a-empty v-if="!posts" />
+  <a-empty v-if="posts.length === 0" :description="t('post.none')" />
 </template>
 
 <script setup>
 import { ref, h, watch } from 'vue';
-import { Descriptions, message } from 'ant-design-vue';
+import { message } from 'ant-design-vue';
+import { useI18n } from 'vue-i18n';
 import { DeleteOutlined } from '@ant-design/icons-vue';
+
+const { t } = useI18n();
 
 import { callApi } from '@/units/api';
 import eventBus from '@/units/eventBus';
 
 import NewPost from '@/components/posts/NewPost.vue';
+import { getUser } from '@/units/storage';
 
 const posts = ref([]);
 const loading = ref(true);
-
-const fetchVotes = async (postId) => {
-  try {
-    const response = await callApi(`post/${postId}/votes`);
-    const { support, oppose } = response.data;
-    const post = posts.value.find(p => p.id === postId);
-    if (post) {
-      post.supportCount = support;
-      post.opposeCount = oppose;
-    }
-  } catch (error) {
-    console.error('Error fetching votes:', error);
-  }
-};
 
 const fetchPosts = async () => {
   loading.value = true;
@@ -105,49 +87,46 @@ const fetchPosts = async () => {
   //   }
   // ];
   loading.value = false;
-
-  updateDisableBtn();
 };
 
-const deletePost = (postId) => {
-  console.log(postId);
+const deleteBtnStates = ref({});
+
+const deletePost = (postInnerid) => {
+  deleteBtnStates.value[postInnerid] = true;
   callApi("post/delete", {
     method: 'POST',
-    body: { innerid: postId }
+    body: { innerid: postInnerid }
   }).then((res) => {
-    message.success(res.message)
-  })
-};
-
-const updateDisableBtn = () => {
-  // 已投票就 disable
-  posts.value.forEach((post) => {
-    const voteKey = `vote_${post.id}`;
-    console.log('voteKey', voteKey);
-    if (localStorage.getItem(voteKey)) {
-      post.supportDisabled = true;
-      post.opposeDisabled = true;
-    } else {
-      post.supportDisabled = false;
-      post.opposeDisabled = false;
-    }
+    message.success(res.message);
+    fetchPosts();
+  }).catch((err) => {
+    message.error(err.message);
+  }).finally(() => {
+    deleteBtnStates.value[postInnerid] = false;
   });
 };
 
-const supportPost = async (postId, type) => {
-  const voteKey = `vote_${postId}`;
-  if (localStorage.getItem(voteKey)) {
-    message.warning('您已经投过票了');
-    return;
-  }
 
+const fetchVotes = async (postId) => {
+  try {
+    const response = await callApi(`post/${postId}/votes`);
+    const { support, oppose } = response.data;
+    const post = posts.value.find(p => p.id === postId);
+    if (post) {
+      post.supportCount = support;
+      post.opposeCount = oppose;
+    }
+  } catch (error) {
+    console.error('Error fetching votes:', error);
+  }
+};
+
+const votePost = async (postId, type) => {
   loading.value = true;
   callApi(`post/${postId}/${type}`, { method: 'POST' }).then((res) => {
     loading.value = false;
     message.success(res.message);
-    localStorage.setItem(voteKey, true); // Mark as voted
     fetchVotes(postId); // 更新投票结果
-    updateDisableBtn();
   }).catch((err) => {
     loading.value = false;
     message.error(err.message);
@@ -176,5 +155,13 @@ fetchPosts();
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.ant-form-item:last-child {
+  margin-bottom: 0;
+}
+
+.ant-progress-inner {
+  background-color: transparent;
 }
 </style>

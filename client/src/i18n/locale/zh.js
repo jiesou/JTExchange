@@ -69,9 +69,10 @@ export default {
     post: {
         title: '标题',
         list: '帖子列表',
+        none: '暂无帖子',
         new: '新建帖子',
         content: '内容',
         enableVote: '允许投票',
-        submit: '提交'
+        submit: '提交',
     }
 }

@@ -31,7 +31,7 @@ function handleMenuClick({ key }) {
         case '1':
             break;
         case '2':
-            message.success('Account logouted');
+            message.success('账号已登出');
             setUser();
             router.push({ name: 'login' });
             break;

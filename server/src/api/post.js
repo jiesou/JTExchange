@@ -11,9 +11,9 @@ router.get('/', async (request, response) => {
     let reqBody = reqParamsParser(request);
     // 判断 id 是否合法
     if (/^[\da-f]{1,12}$/.test(String(reqBody.innerid))) {
-        // 在数据库中查找帖子
+        // 在数据库中查找特定帖子
         const post = await dbPost.select({
-            innerid: reqBody.id
+            innerid: reqBody.innerid
         }, {
             limit: 1,
             select: ['-content', '-comments.data']
@@ -24,10 +24,16 @@ router.get('/', async (request, response) => {
             makeResponse(response, 400, '找不到该消息');
         }
     } else {
+        // 获取所有帖子列表
         const posts = await dbPost.select({}, {
             desc: 'time', limit: reqBody.limit || 10, offset: reqBody.offset || 0
         });
-        console.log(posts);
+        for (const post of posts) {
+            // 计算每个帖子的投票数
+            const { supportCount, opposeCount } = await calculateVoteCounts(post.innerid);
+            post.dataValues.supportCount = supportCount;
+            post.dataValues.opposeCount = opposeCount;
+        }
         makeResponse(response, 0, '成功获取', posts);
     }
 });
@@ -76,7 +82,7 @@ router.post('/:postId/:type', async (request, response) => {
     // 检查用户是否已经投票
     const existingVote = await dbVote.select({
         user_pk: user.pk,
-        post_id: postId
+        post_innerid: postId
     }, { limit: 1 });
 
     if (existingVote.length > 0) {
@@ -110,6 +116,7 @@ router.post('/new', async (request, response) => {
         content: reqBody.content,
         author: user.pk,
         author_nick: user.nick,
+        enable_vote: reqBody.enableVote,
         time: Date.now()
     };
     const result = await dbPost.add(newPost);
@@ -123,7 +130,7 @@ router.post('/delete', async (request, response) => {
     const reqBody = reqParamsParser(request);
     const result = await dbPost.delete({ innerid: reqBody.innerid });
     if (result) {
-        makeResponse(response, 0, '成功');
+        makeResponse(response, 0, '删除帖子成功');
     } else {
         makeResponse(response, 400, '找不到该消息');
     }
