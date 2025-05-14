@@ -53,6 +53,11 @@ Human: ${generateMessage.value}`;
 <template>
   <a-card :title="t('transaction.list')">
     <a-spin :tip="t('voice.understanding')" :spinning="isUnderstanding">
+      <a-typography-paragraph v-if="result">
+        <pre>
+        {{ result }}
+      </pre>
+      </a-typography-paragraph>
       <a-flex justify="space-between" gap="middle">
         <a-button @click=" handleSummarize" style="margin-bottom: 20px">
         {{ t('transaction.summarize') }}
@@ -62,11 +67,6 @@ Human: ${generateMessage.value}`;
             style="width: calc(100% - 80px);" @keyup.enter="handleGenerate" />
           <a-button type="primary" @click="handleGenerate">发送</a-button>
         </a-input-group>
-        <a-typography-paragraph v-if="result">
-          <pre>
-          {{ result }}
-        </pre>
-        </a-typography-paragraph>
       </a-flex>
     </a-spin>
     <a-divider v-if="result" />

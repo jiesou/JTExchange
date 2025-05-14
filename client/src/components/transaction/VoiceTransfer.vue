@@ -84,7 +84,7 @@ function toggleRecording() {
         </a-button>
       </div>
 
-      <a-textarea v-model:value="recognizedText" :placeholder="t('voice.content')" />
+      <a-textarea v-model:value="recognizedText" :placeholder="t('voice.content')" @keyup.enter="startUnderstand" />
     </a-spin>
   </a-card>
 </template>
