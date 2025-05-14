@@ -1,8 +1,8 @@
 <template>
   <NewPost @refresh="fetchPosts" />
   <a-spin :spinning="loading" delay=500>
-    <a-flex wrap="warp" gap="small" style="width: 100%; max-width: 600px; margin: 16px auto;"> 
-      <a-card v-for="post in posts" :key="post.id" style="max-width: 480px; min-width: 480px; margin-bottom: 8px;">
+    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+      <a-card v-for="post in posts" :key="post.id" style="max-width: 520px; min-width: 400px; margin-bottom: 8px;">
         <template #title>
           <a-card-meta :title="post.title"
             :description="post.author_nick + ' 于 ' + new Date(Number(post.time)).toLocaleString()"
@@ -15,7 +15,7 @@
         </template>
         <pre style="white-space: pre-wrap;">{{ post.content }}</pre><!--  允许换行 -->
 
-        <div style="margin-top: 16px; position: relative;" v-if="post.supportCount">
+        <div style="margin-top: 16px; position: relative;" v-if="post.supportCount || post.opposeCount">
           <a-progress style="position: absolute;"
             :percent="post.supportCount / (post.supportCount + post.opposeCount) * 100"
             :stroke-color="{ from: '#108ee9', to: '#87d068' }" :show-info="false" status="active" />
@@ -32,7 +32,7 @@
           </a-button>
         </a-flex>
       </a-card>
-    </a-flex>
+    </div>
   </a-spin>
   <a-empty v-if="posts.length === 0" :description="t('post.none')" />
 </template>
@@ -126,18 +126,17 @@ const votePost = async (postId, type) => {
   callApi(`post/${postId}/${type}`, { method: 'POST' }).then((res) => {
     loading.value = false;
     message.success(res.message);
-    fetchVotes(postId); // 更新投票结果
+    for (const post of posts.value) {
+      if (post.innerid === postId) {
+        post.supportCount = res.data.supportCount;
+        post.opposeCount = res.data.opposeCount;
+      }
+    }
   }).catch((err) => {
     loading.value = false;
     message.error(err.message);
   });
 };
-
-// onMounted(() => {
-//   setInterval(() => {
-//     eventBus.refresh = !eventBus.refresh;
-//   }, 1000);
-// });
 
 watch(() => eventBus.refresh, fetchPosts);
 
@@ -145,6 +144,12 @@ fetchPosts();
 </script>
 
 <style>
+.ant-spin-container {
+  /* post 列表在页面中间 */
+  max-width: 1200px;
+  margin: auto;
+}
+
 .publish-button {
   position: absolute;
   top: 16px;
