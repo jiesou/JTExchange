@@ -1,6 +1,6 @@
 <template>
   <NewPost @refresh="fetchPosts" />
-  <a-spin :spinning="loading" delay=500>
+  <a-spin :spinning="loading">
     <div style="display: flex; flex-wrap: wrap; gap: 8px;">
       <a-card v-for="post in posts" :key="post.id" style="max-width: 520px; min-width: 400px; margin-bottom: 8px;">
         <template #title>
@@ -58,7 +58,11 @@ const fetchPosts = async () => {
   loading.value = true;
   callApi("post").then((res) => {
     posts.value = res.data;
-  })
+  }).catch((err) => {
+    message.error(err);
+  }).finally(() => {
+    loading.value = false;
+  });
   // posts.value = [
   //   {
   //     id: 1,

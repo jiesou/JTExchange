@@ -1,8 +1,12 @@
+import Leaderboard from "@/views/Leaderboard.vue";
+import { titleProps } from "ant-design-vue/es/typography/Title";
+
 export default {
     success: '成功',
     refresh: '刷新',
     amount: '积分',
     comment: '备注',
+    none: '暂无内容',
     transfer: '转账',
     app: {
         title: '拓学积分'
@@ -59,8 +63,8 @@ export default {
         title: '语音转账',
         start: '开始',
         stop: '停止',
-        understanding: '听写中...',
-        content: '识别结果...',
+        understanding: '理解中...',
+        content: '你的指令...',
         confirm: '确认',
     },
     post: {
@@ -74,5 +78,8 @@ export default {
     },
     platform: {
         title: '平台',
+    },
+    leaderboard: {
+        title: '排行榜'
     }
 };

@@ -3,6 +3,7 @@ export default {
     refresh: 'Refresh',
     amount: 'Amount',
     comment: 'Comment',
+    none: 'There is nothing here',
     transfer: 'Transfer',
     app: {
         title: 'JTEx'
@@ -59,7 +60,7 @@ export default {
         title: 'Voice Transaction',
         start: 'Start Recording',
         stop: 'Stop Recording',
-        understanding: 'Listening...',
+        understanding: 'Understanding...',
         content: 'Your commands show up here...',
         confirm: 'Confirm',
     },
@@ -74,5 +75,8 @@ export default {
         content: 'Content',
         enableVote: 'Enable Voting',
         submit: 'Submit',
+    },
+    leaderboard: {
+        title: 'Leaderboard',
     }
 };
