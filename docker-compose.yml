@@ -1,5 +1,6 @@
 services:
   client:
+    restart: unless-stopped
     build:
       context: ./client
     ports:
@@ -8,6 +9,7 @@ services:
       - server
 
   server:
+    restart: unless-stopped
     build:
       context: ./server
     environment:
@@ -20,6 +22,7 @@ services:
       - db
 
   db:
+    restart: unless-stopped
     image: postgres
     environment:
       POSTGRES_USER: "postgres"
