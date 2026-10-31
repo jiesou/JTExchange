@@ -6,24 +6,24 @@ export default {
     none: 'There is nothing here',
     transfer: 'Transfer',
     app: {
-        title: 'JTEx'
+        title: 'TokenX Community Elderly Care'
     },
     welcome: {
         title: 'Home',
-        intro: 'Welcome to Just Thanks Exchange!',
-        introDesc: 'Turn every kind act into campus credit. Give points, trade perks, flex on the leaderboard.',
+        intro: 'TokenX Community Elderly Care Points System',
+        introDesc: 'This is the first points system suitable for elderly care communities',
         getStarted: 'Get Started',
         registerNow: 'Register Now',
-        education: 'Campus Help',
-        educationDesc: 'Grab water, share notes, fix gear—every little favor earns you points tokens.',
-        tooling: 'Token Trading',
-        toolingDesc: 'Send a friend points to say thanks, trade points for snack passes or extra break time.',
-        ecosystem: 'Good Vibes Loop',
-        ecosystemDesc: 'Real-time points flows spark more help—parents and teachers can watch your kindness grow.',
-        community: 'Open Feed',
-        communityDesc: 'Post updates, vote on campus topics, see what everyone’s talking about.',
-        support: 'Grow Together',
-        supportDesc: 'Built by students for students to keep the kindness circle rolling and boost communication.'
+        education: 'Elderly Care Education',
+        educationDesc: 'We deeply cultivate the elderly care field, committed to solving the pain points of the elderly care industry through technological innovation and model exploration, accumulating rich experience and resources. We understand the core needs of elderly care and turn these insights into practice, promoting the continuous evolution of the value certification system in the elderly care industry.',
+        tooling: 'Technology Driven',
+        toolingDesc: 'Technology is the soul of the elderly care system. We adopt advanced "TSBL" (Transaction-Based Ledger) technology to ensure data security, non-repudiation, and tamper-proof, effectively reducing transaction disputes. At the same time, our system design is user-centric, efficient, safe, simple, and practical.',
+        ecosystem: 'Prosperous Ecosystem',
+        ecosystemDesc: 'The elderly care system is not only an independent platform but also an important part of the entire elderly care ecosystem. From community services to global brands, we have built a diverse and globally operated ecosystem. Each component is an indispensable part of the elderly care value network, jointly promoting the prosperity and development of the entire system. Decentralized construction, global operation.',
+        community: 'Democratic Community',
+        communityDesc: 'The elderly care system is maintained and governed by community members from around the world. Guided by the elderly care white paper, a highly autonomous community has been formed, where everyone has the opportunity to participate in the decision-making process, truly achieving democratic management. This bottom-up development model allows the elderly care system to continuously absorb voices from the front line, maintaining vitality and innovation.',
+        support: 'Spontaneous Support',
+        supportDesc: 'The elderly care system is supported by a completely independent and non-profit community and team. From technical support to market promotion, from product iteration to user service, there is a group of passionate volunteers and professional teams behind the elderly care system. They selflessly contribute their wisdom and strength, and it is their dedication that allows the elderly care system to move forward steadily.'
     },
     login: {
         title: 'Login',

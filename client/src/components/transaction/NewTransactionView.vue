@@ -78,7 +78,7 @@ const handleVoiceCallback = (transactions) => {
       <a-form class="new-transaction" :model="transactionState" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }"
         @finish="handleTransaction">
         <a-form-item name="amount" :label="t('amount')" required>
-          <a-input v-model:value="transactionState.amount" :placeholder="t('amount')" type="number" suffix="积分" />
+          <a-input v-model:value="transactionState.amount" :placeholder="t('amount')" type="number" suffix="个单位积分" />
         </a-form-item>
         <a-form-item name="to" :label="t('dash.transferTo')" required>
           <a-select v-model:value="transactionState.to" :placeholder="t('dash.transferTo')" mode="multiple"
